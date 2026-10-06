@@ -1,0 +1,2393 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}
+Dashboard | InnovaFile
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* ========================================================
+       DASHBOARD INNOVAFILE 
+    ======================================================== */
+
+    .analytics-dashboard {
+        --if-deep: #0b2b1a;
+        --if-dark: #1f4d22;
+        --if-primary: #4f8f1f;
+        --if-medium: #72ad2b;
+        --if-light: #9bcb45;
+        --if-soft: #eaf4dd;
+
+        --if-text: #1c261d;
+        --if-muted: #71806f;
+
+        --if-border:
+            rgba(
+                92,
+                120,
+                78,
+                .18
+            );
+    }
+
+
+    /* ========================================================
+       HERO
+    ======================================================== */
+
+    .analytics-hero {
+        position: relative;
+
+        overflow: hidden;
+
+        margin-bottom: 24px;
+
+        padding:
+            30px
+            32px;
+
+        border-radius: 24px;
+
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                #0b2b1a 0%,
+                #1f4d22 55%,
+                #4f8f1f 100%
+            );
+
+        box-shadow:
+            0 18px 45px
+            rgba(
+                31,
+                77,
+                34,
+                .18
+            );
+    }
+
+
+    .analytics-hero::before {
+        content: "";
+
+        position: absolute;
+
+        top: -140px;
+        right: -100px;
+
+        width: 300px;
+        height: 300px;
+
+        border-radius: 50%;
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                .08
+            );
+    }
+
+
+    .analytics-hero::after {
+        content: "";
+
+        position: absolute;
+
+        right: 120px;
+        bottom: -170px;
+
+        width: 220px;
+        height: 220px;
+
+        border-radius: 50%;
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                .06
+            );
+    }
+
+
+    .hero-content {
+        position: relative;
+
+        z-index: 2;
+    }
+
+
+    .hero-kicker {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 7px;
+
+        margin-bottom: 10px;
+
+        color: #d8efb9;
+
+        font-size: .75rem;
+        font-weight: 800;
+
+        letter-spacing: 1.4px;
+    }
+
+
+    .hero-title {
+        margin: 0;
+
+        color: #ffffff;
+
+        font-size: 2rem;
+        font-weight: 800;
+
+        letter-spacing: -.7px;
+    }
+
+
+    .hero-description {
+        max-width: 670px;
+
+        margin:
+            9px
+            0
+            0;
+
+        color:
+            rgba(
+                255,
+                255,
+                255,
+                .78
+            );
+
+        font-size: .95rem;
+
+        line-height: 1.6;
+    }
+
+
+    .hero-date {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        padding:
+            10px
+            14px;
+
+        border:
+            1px solid
+            rgba(
+                255,
+                255,
+                255,
+                .18
+            );
+
+        border-radius: 12px;
+
+        color: #ffffff;
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                .10
+            );
+
+        backdrop-filter:
+            blur(
+                8px
+            );
+
+        font-size: .85rem;
+    }
+
+
+    /* ========================================================
+       KPI
+    ======================================================== */
+
+    .metric-card {
+        position: relative;
+
+        overflow: hidden;
+
+        height: 100%;
+
+        padding: 22px;
+
+        border:
+            1px solid
+            var(--if-border);
+
+        border-radius: 18px;
+
+        background: #ffffff;
+
+        transition:
+            transform .2s ease,
+            box-shadow .2s ease,
+            border-color .2s ease;
+    }
+
+
+    .metric-card:hover {
+        border-color: #c9ddb9;
+
+        transform:
+            translateY(
+                -3px
+            );
+
+        box-shadow:
+            0 12px 35px
+            rgba(
+                31,
+                77,
+                34,
+                .09
+            );
+    }
+
+
+    .metric-top {
+        display: flex;
+
+        align-items: flex-start;
+
+        justify-content: space-between;
+
+        gap: 15px;
+    }
+
+
+    .metric-label {
+        display: block;
+
+        margin-bottom: 6px;
+
+        color:
+            var(--if-muted);
+
+        font-size: .74rem;
+        font-weight: 800;
+
+        letter-spacing: .7px;
+
+        text-transform: uppercase;
+    }
+
+
+    .metric-number {
+        display: block;
+
+        color:
+            var(--if-deep);
+
+        font-size: 1.9rem;
+        font-weight: 850;
+
+        letter-spacing: -1px;
+
+        line-height: 1.1;
+    }
+
+
+    .metric-description {
+        display: block;
+
+        margin-top: 8px;
+
+        color: #8b9b86;
+
+        font-size: .78rem;
+
+        line-height: 1.55;
+    }
+
+
+    .metric-icon {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        width: 46px;
+        height: 46px;
+
+        flex-shrink: 0;
+
+        border-radius: 14px;
+
+        color:
+            var(--if-primary);
+
+        background:
+            var(--if-soft);
+
+        font-size: 1.2rem;
+    }
+
+
+    .metric-progress {
+        height: 5px;
+
+        margin-top: 17px;
+
+        overflow: hidden;
+
+        border-radius: 999px;
+
+        background: #edf3e9;
+    }
+
+
+    .metric-progress-bar {
+        height: 100%;
+
+        border-radius: 999px;
+
+        background:
+            linear-gradient(
+                90deg,
+                #4f8f1f,
+                #9bcb45
+            );
+    }
+
+
+    /* ========================================================
+       PANELES
+    ======================================================== */
+
+    .analytics-panel {
+        height: 100%;
+
+        overflow: hidden;
+
+        border:
+            1px solid
+            var(--if-border);
+
+        border-radius: 20px;
+
+        background: #ffffff;
+
+        box-shadow:
+            0 6px 25px
+            rgba(
+                31,
+                77,
+                34,
+                .04
+            );
+    }
+
+
+    .analytics-panel-head {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 15px;
+
+        padding:
+            20px
+            22px
+            15px;
+    }
+
+
+    .analytics-panel-title {
+        margin: 0;
+
+        color:
+            var(--if-deep);
+
+        font-size: .98rem;
+        font-weight: 800;
+    }
+
+
+    .analytics-panel-subtitle {
+        margin-top: 4px;
+
+        color: #8b9b86;
+
+        font-size: .75rem;
+    }
+
+
+    .analytics-panel-body {
+        padding:
+            10px
+            22px
+            22px;
+    }
+
+
+    .analytics-green-icon {
+        color:
+            var(--if-primary);
+
+        font-size: 1rem;
+    }
+
+
+    /* ========================================================
+       BADGES
+    ======================================================== */
+
+    .analytics-dashboard .soft-badge {
+        display: inline-flex;
+
+        align-items: center;
+
+        padding:
+            6px
+            10px;
+
+        border:
+            1px solid
+            #dce8d4;
+
+        border-radius: 999px;
+
+        color:
+            var(--if-dark);
+
+        background:
+            #f2f7ed;
+
+        font-size: .68rem;
+        font-weight: 800;
+    }
+
+
+    /* ========================================================
+       BOTONES INTERNOS
+    ======================================================== */
+
+    .analytics-dashboard .btn-light {
+        border:
+            1px solid
+            #dde7d7;
+
+        color: #566451;
+
+        background: #f8faf6;
+    }
+
+
+    .analytics-dashboard .btn-light:hover {
+        border-color: #c8dcb9;
+
+        color:
+            var(--if-dark);
+
+        background:
+            var(--if-soft);
+    }
+
+
+    /* ========================================================
+       DOCUMENTOS RECIENTES
+    ======================================================== */
+
+    .recent-document {
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        padding:
+            13px
+            0;
+
+        border-bottom:
+            1px solid
+            #edf3e9;
+    }
+
+
+    .recent-document:last-child {
+        border-bottom: 0;
+    }
+
+
+    .recent-icon {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        width: 42px;
+        height: 42px;
+
+        flex-shrink: 0;
+
+        border-radius: 13px;
+
+        color:
+            var(--if-primary);
+
+        background:
+            var(--if-soft);
+
+        font-size: 1.05rem;
+    }
+
+
+    .recent-info {
+        min-width: 0;
+
+        flex: 1;
+    }
+
+
+    .recent-title {
+        overflow: hidden;
+
+        color:
+            var(--if-deep);
+
+        font-size: .86rem;
+        font-weight: 750;
+
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+    }
+
+
+    .recent-meta {
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 5px;
+
+        margin-top: 4px;
+
+        color: #8b9b86;
+
+        font-size: .72rem;
+    }
+
+
+    .recent-type {
+        padding:
+            4px
+            7px;
+
+        border-radius: 7px;
+
+        color:
+            var(--if-dark);
+
+        background:
+            var(--if-soft);
+
+        font-size: .66rem;
+        font-weight: 800;
+    }
+
+
+    /* ========================================================
+       TOP COLABORADORES
+    ======================================================== */
+
+    .top-user-row {
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        padding:
+            12px
+            0;
+
+        border-bottom:
+            1px solid
+            #edf3e9;
+    }
+
+
+    .top-user-row:last-child {
+        border-bottom: 0;
+    }
+
+
+    .top-position {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        width: 28px;
+        height: 28px;
+
+        border-radius: 9px;
+
+        color:
+            var(--if-primary);
+
+        background:
+            var(--if-soft);
+
+        font-size: .72rem;
+        font-weight: 850;
+    }
+
+
+    .top-avatar {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        width: 36px;
+        height: 36px;
+
+        border-radius: 50%;
+
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                #4f8f1f,
+                #72ad2b
+            );
+
+        font-size: .8rem;
+        font-weight: 800;
+    }
+
+
+    .top-info {
+        min-width: 0;
+
+        flex: 1;
+    }
+
+
+    .top-name {
+        overflow: hidden;
+
+        color:
+            var(--if-deep);
+
+        font-size: .83rem;
+        font-weight: 750;
+
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+    }
+
+
+    .top-description {
+        color: #8b9b86;
+
+        font-size: .69rem;
+    }
+
+
+    .top-total {
+        color:
+            var(--if-primary);
+
+        font-size: .85rem;
+        font-weight: 850;
+    }
+
+
+    /* ========================================================
+       ACTIVIDAD
+    ======================================================== */
+
+    .activity-item {
+        position: relative;
+
+        display: flex;
+
+        gap: 13px;
+
+        padding-bottom: 17px;
+    }
+
+
+    .activity-item:not(:last-child)::before {
+        content: "";
+
+        position: absolute;
+
+        top: 36px;
+        bottom: 0;
+        left: 17px;
+
+        width: 1px;
+
+        background: #dfe9d9;
+    }
+
+
+    .activity-dot {
+        position: relative;
+
+        z-index: 2;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        width: 34px;
+        height: 34px;
+
+        flex-shrink: 0;
+
+        border-radius: 11px;
+
+        color:
+            var(--if-primary);
+
+        background:
+            var(--if-soft);
+
+        font-size: .8rem;
+    }
+
+
+    .activity-title {
+        color:
+            var(--if-deep);
+
+        font-size: .82rem;
+        font-weight: 750;
+    }
+
+
+    .activity-description {
+        margin-top: 2px;
+
+        color: #667461;
+
+        font-size: .73rem;
+    }
+
+
+    .activity-user {
+        margin-top: 4px;
+
+        color: #8b9b86;
+
+        font-size: .68rem;
+    }
+
+
+    /* ========================================================
+       MINI STATS
+    ======================================================== */
+
+    .mini-stat {
+        padding:
+            14px
+            16px;
+
+        border:
+            1px solid
+            #e5eee0;
+
+        border-radius: 14px;
+
+        background: #f8faf6;
+    }
+
+
+    .mini-stat-label {
+        color: #83927e;
+
+        font-size: .68rem;
+        font-weight: 750;
+
+        text-transform: uppercase;
+    }
+
+
+    .mini-stat-number {
+        margin-top: 3px;
+
+        color:
+            var(--if-deep);
+
+        font-size: 1.05rem;
+        font-weight: 850;
+    }
+
+
+    /* ========================================================
+       EMPTY
+    ======================================================== */
+
+    .analytics-dashboard .empty-state {
+        color:
+            var(--if-muted);
+    }
+
+
+    .analytics-dashboard .empty-icon {
+        color:
+            var(--if-primary);
+
+        background:
+            var(--if-soft);
+    }
+
+
+    /* ========================================================
+       RESPONSIVE
+    ======================================================== */
+
+    @media (
+        max-width: 768px
+    ) {
+
+        .analytics-hero {
+            padding: 24px;
+        }
+
+
+        .hero-title {
+            font-size: 1.55rem;
+        }
+
+
+        .analytics-panel-head {
+            align-items: flex-start;
+        }
+
+    }
+
+</style>
+
+
+<div class="analytics-dashboard">
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="analytics-hero">
+
+        <div class="hero-content">
+
+            <div
+                class="d-flex justify-content-between align-items-start flex-wrap gap-3"
+            >
+
+                <div>
+
+                    <div class="hero-kicker">
+
+                        <i class="bi bi-stars"></i>
+
+                        PANEL ANALÍTICO
+
+                    </div>
+
+
+                    <h1 class="hero-title">
+                        Centro de inteligencia documental
+                    </h1>
+
+
+                    <p class="hero-description">
+
+                        Monitorea el crecimiento del repositorio,
+                        la distribución de archivos y la actividad
+                        general de InnovaFile desde un solo lugar.
+
+                    </p>
+
+                </div>
+
+
+                <div class="hero-date">
+
+                    <i class="bi bi-calendar3"></i>
+
+                    <span id="dashboardDate"></span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         MÉTRICAS
+    ====================================================== -->
+
+    <div class="row g-3 mb-4">
+
+
+        <!-- DOCUMENTOS -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <div>
+
+                        <span class="metric-label">
+                            Documentos
+                        </span>
+
+                        <strong class="metric-number">
+                            {{ documentos }}
+                        </strong>
+
+                        <span class="metric-description">
+                            Archivos activos en el repositorio
+                        </span>
+
+                    </div>
+
+
+                    <div class="metric-icon">
+
+                        <i class="bi bi-files"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ESTE MES -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <div>
+
+                        <span class="metric-label">
+                            Este mes
+                        </span>
+
+                        <strong class="metric-number">
+                            +{{ documentos_mes }}
+                        </strong>
+
+                        <span class="metric-description">
+                            {{ porcentaje_mes }}% del repositorio total
+                        </span>
+
+                    </div>
+
+
+                    <div class="metric-icon">
+
+                        <i class="bi bi-graph-up-arrow"></i>
+
+                    </div>
+
+                </div>
+
+
+                <div class="metric-progress">
+
+                    <div
+                        class="metric-progress-bar"
+                        style="width: {{ [porcentaje_mes, 100]|min }}%"
+                    ></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- USUARIOS -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <div>
+
+                        <span class="metric-label">
+                            Usuarios
+                        </span>
+
+                        <strong class="metric-number">
+                            {{ usuarios }}
+                        </strong>
+
+                        <span class="metric-description">
+                            Personas registradas en el sistema
+                        </span>
+
+                    </div>
+
+
+                    <div class="metric-icon">
+
+                        <i class="bi bi-people"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ALMACENAMIENTO -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="metric-card">
+
+                <div class="metric-top">
+
+                    <div>
+
+                        <span class="metric-label">
+                            Almacenamiento
+                        </span>
+
+                        <strong
+                            class="metric-number"
+                            style="font-size:1.55rem"
+                        >
+                            {{ almacenamiento.formatted }}
+                        </strong>
+
+                        <span class="metric-description">
+                            Tamaño total de documentos activos
+                        </span>
+
+                    </div>
+
+
+                    <div class="metric-icon">
+
+                        <i class="bi bi-device-hdd"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CRECIMIENTO + TIPOS
+    ====================================================== -->
+
+    <div class="row g-4 mb-4">
+
+
+        <!-- CRECIMIENTO -->
+
+        <div class="col-xl-8">
+
+            <div class="analytics-panel">
+
+                <div class="analytics-panel-head">
+
+                    <div>
+
+                        <h3 class="analytics-panel-title">
+                            Crecimiento documental
+                        </h3>
+
+                        <div class="analytics-panel-subtitle">
+                            Documentos incorporados durante los últimos 6 meses
+                        </div>
+
+                    </div>
+
+
+                    <span class="soft-badge">
+
+                        <i class="bi bi-bar-chart-line me-1"></i>
+
+                        Tendencia
+
+                    </span>
+
+                </div>
+
+
+                <div class="analytics-panel-body">
+
+                    <canvas
+                        id="monthlyChart"
+                        height="105"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TIPOS -->
+
+        <div class="col-xl-4">
+
+            <div class="analytics-panel">
+
+                <div class="analytics-panel-head">
+
+                    <div>
+
+                        <h3 class="analytics-panel-title">
+                            Tipos de archivo
+                        </h3>
+
+                        <div class="analytics-panel-subtitle">
+                            Distribución por extensión
+                        </div>
+
+                    </div>
+
+
+                    <i
+                        class="bi bi-pie-chart analytics-green-icon"
+                    ></i>
+
+                </div>
+
+
+                <div class="analytics-panel-body">
+
+                    {% if documentos_tipo %}
+
+                    <canvas
+                        id="typeChart"
+                        height="190"
+                    ></canvas>
+
+                    {% else %}
+
+                    <div class="empty-state py-4">
+                        No hay datos disponibles.
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CATEGORÍAS + TOP USUARIOS
+    ====================================================== -->
+
+    <div class="row g-4 mb-4">
+
+
+        <!-- CATEGORÍAS -->
+
+        <div class="col-xl-7">
+
+            <div class="analytics-panel">
+
+                <div class="analytics-panel-head">
+
+                    <div>
+
+                        <h3 class="analytics-panel-title">
+                            Distribución por categoría
+                        </h3>
+
+                        <div class="analytics-panel-subtitle">
+                            Cantidad de documentos clasificados
+                        </div>
+
+                    </div>
+
+
+                    <a
+                        href="{{ url_for('categories.index') }}"
+                        class="btn btn-light btn-sm"
+                    >
+                        Ver categorías
+
+                        <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+
+                </div>
+
+
+                <div class="analytics-panel-body">
+
+                    <canvas
+                        id="categoryChart"
+                        height="120"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TOP USUARIOS -->
+
+        <div class="col-xl-5">
+
+            <div class="analytics-panel">
+
+                <div class="analytics-panel-head">
+
+                    <div>
+
+                        <h3 class="analytics-panel-title">
+                            Top colaboradores
+                        </h3>
+
+                        <div class="analytics-panel-subtitle">
+                            Usuarios con más documentos registrados
+                        </div>
+
+                    </div>
+
+
+                    <i
+                        class="bi bi-trophy analytics-green-icon"
+                    ></i>
+
+                </div>
+
+
+                <div class="analytics-panel-body">
+
+                    {% for user in top_usuarios %}
+
+                    <div class="top-user-row">
+
+                        <div class="top-position">
+                            {{ loop.index }}
+                        </div>
+
+
+                        <div class="top-avatar">
+
+                            {% if user.name %}
+                                {{ user.name[0]|upper }}
+                            {% else %}
+                                U
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="top-info">
+
+                            <div class="top-name">
+                                {{ user.name }}
+                            </div>
+
+                            <div class="top-description">
+                                Documentos registrados
+                            </div>
+
+                        </div>
+
+
+                        <div class="top-total">
+                            {{ user.total }}
+                        </div>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="empty-state py-4">
+                        No hay información disponible.
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         DOCUMENTOS RECIENTES + ACTIVIDAD
+    ====================================================== -->
+
+    <div class="row g-4 mb-4">
+
+
+        <!-- DOCUMENTOS RECIENTES -->
+
+        <div class="col-xl-7">
+
+            <div class="analytics-panel">
+
+                <div class="analytics-panel-head">
+
+                    <div>
+
+                        <h3 class="analytics-panel-title">
+                            Documentos recientes
+                        </h3>
+
+                        <div class="analytics-panel-subtitle">
+                            Últimos archivos incorporados al repositorio
+                        </div>
+
+                    </div>
+
+
+                    <a
+                        href="{{ url_for('documents.index') }}"
+                        class="btn btn-light btn-sm"
+                    >
+                        Ver todos
+
+                        <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+
+                </div>
+
+
+                <div class="analytics-panel-body">
+
+                    {% for document in ultimos_documentos %}
+
+                    <div class="recent-document">
+
+                        <div class="recent-icon">
+
+                            {% if document.file_type == 'pdf' %}
+
+                                <i class="bi bi-file-earmark-pdf"></i>
+
+                            {% elif document.file_type in ['doc', 'docx'] %}
+
+                                <i class="bi bi-file-earmark-word"></i>
+
+                            {% elif document.file_type in ['xls', 'xlsx', 'csv'] %}
+
+                                <i class="bi bi-file-earmark-spreadsheet"></i>
+
+                            {% elif document.file_type in ['jpg', 'jpeg', 'png'] %}
+
+                                <i class="bi bi-file-earmark-image"></i>
+
+                            {% else %}
+
+                                <i class="bi bi-file-earmark-text"></i>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="recent-info">
+
+                            <div class="recent-title">
+                                {{ document.title }}
+                            </div>
+
+
+                            <div class="recent-meta">
+
+                                <span>
+                                    {{ document.category.name }}
+                                </span>
+
+                                <span>•</span>
+
+                                <span>
+                                    {{ document.user.name }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="recent-type">
+                            {{ document.file_type|upper }}
+                        </span>
+
+
+                        <a
+                            href="{{ url_for('documents.show', document_id=document._id) }}"
+                            class="btn btn-sm btn-light icon-btn"
+                            title="Ver documento"
+                        >
+                            <i class="bi bi-arrow-up-right"></i>
+                        </a>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="empty-state py-5">
+
+                        <div class="empty-icon">
+
+                            <i class="bi bi-folder2-open"></i>
+
+                        </div>
+
+                        No hay documentos registrados.
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVIDAD -->
+
+        <div class="col-xl-5">
+
+            <div class="analytics-panel">
+
+                <div class="analytics-panel-head">
+
+                    <div>
+
+                        <h3 class="analytics-panel-title">
+                            Actividad reciente
+                        </h3>
+
+                        <div class="analytics-panel-subtitle">
+                            Últimos movimientos registrados
+                        </div>
+
+                    </div>
+
+
+                    <a
+                        href="{{ url_for('history.index') }}"
+                        class="btn btn-light btn-sm"
+                    >
+                        Historial
+                    </a>
+
+                </div>
+
+
+                <div class="analytics-panel-body">
+
+                    {% for activity in historial %}
+
+                    <div class="activity-item">
+
+                        <div class="activity-dot">
+
+                            <i class="bi bi-activity"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="activity-title">
+                                {{ activity.action }}
+                            </div>
+
+
+                            <div class="activity-description">
+                                {{ activity.description }}
+                            </div>
+
+
+                            <div class="activity-user">
+
+                                <i class="bi bi-person me-1"></i>
+
+                                {{ activity.user.name }}
+
+                                {% if activity.created_at %}
+
+                                    ·
+
+                                    {{ activity.created_at.strftime('%d/%m/%Y %H:%M') }}
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="empty-state py-4">
+                        No existe actividad reciente.
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         RESUMEN
+    ====================================================== -->
+
+    <div class="analytics-panel">
+
+        <div class="analytics-panel-head">
+
+            <div>
+
+                <h3 class="analytics-panel-title">
+                    Resumen del repositorio
+                </h3>
+
+                <div class="analytics-panel-subtitle">
+                    Estado general de InnovaFile
+                </div>
+
+            </div>
+
+
+            <span class="soft-badge">
+
+                <i class="bi bi-check-circle me-1"></i>
+
+                Sistema operativo
+
+            </span>
+
+        </div>
+
+
+        <div class="analytics-panel-body">
+
+            <div class="row g-3">
+
+
+                <div class="col-xl-3 col-md-6">
+
+                    <div class="mini-stat">
+
+                        <div class="mini-stat-label">
+                            Categorías
+                        </div>
+
+                        <div class="mini-stat-number">
+                            {{ categorias }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-xl-3 col-md-6">
+
+                    <div class="mini-stat">
+
+                        <div class="mini-stat-label">
+                            Actividades
+                        </div>
+
+                        <div class="mini-stat-number">
+                            {{ actividades }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-xl-3 col-md-6">
+
+                    <div class="mini-stat">
+
+                        <div class="mini-stat-label">
+                            En papelera
+                        </div>
+
+                        <div class="mini-stat-number">
+                            {{ documentos_papelera }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-xl-3 col-md-6">
+
+                    <div class="mini-stat">
+
+                        <div class="mini-stat-label">
+                            Total almacenado
+                        </div>
+
+                        <div class="mini-stat-number">
+                            {{ almacenamiento.formatted }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+<script
+    src="https://cdn.jsdelivr.net/npm/chart.js"
+></script>
+
+
+<script>
+
+    /* ========================================================
+       PALETA VERDE INNOVAFILE
+    ======================================================== */
+
+    const INNOVAFILE_COLORS = {
+
+        deep:
+            "#0B2B1A",
+
+        dark:
+            "#1F4D22",
+
+        primary:
+            "#4F8F1F",
+
+        medium:
+            "#72AD2B",
+
+        light:
+            "#9BCB45",
+
+        soft:
+            "#EAF4DD",
+
+        text:
+            "#1C261D",
+
+        muted:
+            "#71806F"
+
+    };
+
+
+    /* ========================================================
+       FECHA
+    ======================================================== */
+
+    const dashboardDate =
+        document.getElementById(
+            "dashboardDate"
+        );
+
+    if (dashboardDate) {
+
+        dashboardDate.textContent =
+            new Date().toLocaleDateString(
+                "es-MX",
+                {
+                    day:
+                        "2-digit",
+
+                    month:
+                        "long",
+
+                    year:
+                        "numeric"
+                }
+            );
+
+    }
+
+
+    /* ========================================================
+       CONFIGURACIÓN CHART.JS
+    ======================================================== */
+
+    Chart.defaults.font.family =
+        "'Inter', 'Segoe UI', sans-serif";
+
+    Chart.defaults.color =
+        INNOVAFILE_COLORS.muted;
+
+
+    /* ========================================================
+       CRECIMIENTO DOCUMENTAL
+    ======================================================== */
+
+    const monthlyCanvas =
+        document.getElementById(
+            "monthlyChart"
+        );
+
+
+    if (monthlyCanvas) {
+
+        const monthlyContext =
+            monthlyCanvas.getContext(
+                "2d"
+            );
+
+
+        const monthlyGradient =
+            monthlyContext.createLinearGradient(
+                0,
+                0,
+                0,
+                280
+            );
+
+
+        monthlyGradient.addColorStop(
+            0,
+            "rgba(79, 143, 31, .28)"
+        );
+
+
+        monthlyGradient.addColorStop(
+            1,
+            "rgba(79, 143, 31, 0)"
+        );
+
+
+        new Chart(
+            monthlyCanvas,
+            {
+
+                type:
+                    "line",
+
+
+                data: {
+
+                    labels:
+                        {{
+                            documentos_meses
+                            |map(attribute='label')
+                            |list
+                            |tojson
+                        }},
+
+
+                    datasets: [
+                        {
+
+                            label:
+                                "Documentos",
+
+
+                            data:
+                                {{
+                                    documentos_meses
+                                    |map(attribute='total')
+                                    |list
+                                    |tojson
+                                }},
+
+
+                            borderColor:
+                                INNOVAFILE_COLORS.primary,
+
+
+                            backgroundColor:
+                                monthlyGradient,
+
+
+                            fill:
+                                true,
+
+
+                            tension:
+                                .4,
+
+
+                            borderWidth:
+                                3,
+
+
+                            pointRadius:
+                                4,
+
+
+                            pointHoverRadius:
+                                6,
+
+
+                            pointBackgroundColor:
+                                INNOVAFILE_COLORS.primary,
+
+
+                            pointHoverBackgroundColor:
+                                INNOVAFILE_COLORS.dark,
+
+
+                            pointBorderColor:
+                                "#ffffff",
+
+
+                            pointBorderWidth:
+                                2
+
+                        }
+                    ]
+
+                },
+
+
+                options: {
+
+                    responsive:
+                        true,
+
+
+                    maintainAspectRatio:
+                        true,
+
+
+                    interaction: {
+
+                        intersect:
+                            false,
+
+                        mode:
+                            "index"
+
+                    },
+
+
+                    plugins: {
+
+                        legend: {
+                            display:
+                                false
+                        },
+
+
+                        tooltip: {
+
+                            displayColors:
+                                false,
+
+
+                            backgroundColor:
+                                INNOVAFILE_COLORS.deep,
+
+
+                            titleColor:
+                                "#ffffff",
+
+
+                            bodyColor:
+                                "#ffffff",
+
+
+                            padding:
+                                12,
+
+
+                            callbacks: {
+
+                                label:
+                                    function(context) {
+
+                                        return (
+                                            context.raw
+                                            +
+                                            " documento(s)"
+                                        );
+
+                                    }
+
+                            }
+
+                        }
+
+                    },
+
+
+                    scales: {
+
+                        x: {
+
+                            grid: {
+                                display:
+                                    false
+                            },
+
+
+                            border: {
+                                display:
+                                    false
+                            },
+
+                            ticks: {
+                                color:
+                                    INNOVAFILE_COLORS.muted
+                            }
+
+                        },
+
+
+                        y: {
+
+                            beginAtZero:
+                                true,
+
+
+                            ticks: {
+
+                                precision:
+                                    0,
+
+                                color:
+                                    INNOVAFILE_COLORS.muted
+
+                            },
+
+
+                            border: {
+                                display:
+                                    false
+                            },
+
+
+                            grid: {
+                                color:
+                                    "rgba(79,143,31,.10)"
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    /* ========================================================
+       TIPOS DE ARCHIVO
+    ======================================================== */
+
+    const typeCanvas =
+        document.getElementById(
+            "typeChart"
+        );
+
+
+    if (typeCanvas) {
+
+        new Chart(
+            typeCanvas,
+            {
+
+                type:
+                    "doughnut",
+
+
+                data: {
+
+                    labels:
+                        {{
+                            documentos_tipo
+                            |map(attribute='name')
+                            |list
+                            |tojson
+                        }},
+
+
+                    datasets: [
+                        {
+
+                            data:
+                                {{
+                                    documentos_tipo
+                                    |map(attribute='total')
+                                    |list
+                                    |tojson
+                                }},
+
+
+                            backgroundColor: [
+
+                                "#0B2B1A",
+
+                                "#1F4D22",
+
+                                "#315F27",
+
+                                "#4F8F1F",
+
+                                "#72AD2B",
+
+                                "#9BCB45",
+
+                                "#BEDD89",
+
+                                "#EAF4DD"
+
+                            ],
+
+
+                            borderColor:
+                                "#ffffff",
+
+
+                            borderWidth:
+                                2,
+
+
+                            hoverOffset:
+                                7
+
+                        }
+                    ]
+
+                },
+
+
+                options: {
+
+                    responsive:
+                        true,
+
+
+                    cutout:
+                        "72%",
+
+
+                    plugins: {
+
+                        legend: {
+
+                            position:
+                                "bottom",
+
+
+                            labels: {
+
+                                usePointStyle:
+                                    true,
+
+
+                                pointStyle:
+                                    "circle",
+
+
+                                padding:
+                                    15,
+
+
+                                boxWidth:
+                                    8,
+
+
+                                color:
+                                    INNOVAFILE_COLORS.muted,
+
+
+                                font: {
+                                    size:
+                                        11
+                                }
+
+                            }
+
+                        },
+
+
+                        tooltip: {
+
+                            backgroundColor:
+                                INNOVAFILE_COLORS.deep,
+
+
+                            titleColor:
+                                "#ffffff",
+
+
+                            bodyColor:
+                                "#ffffff"
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    /* ========================================================
+       CATEGORÍAS
+    ======================================================== */
+
+    const categoryCanvas =
+        document.getElementById(
+            "categoryChart"
+        );
+
+
+    if (categoryCanvas) {
+
+        new Chart(
+            categoryCanvas,
+            {
+
+                type:
+                    "bar",
+
+
+                data: {
+
+                    labels:
+                        {{
+                            documentos_categoria
+                            |map(attribute='name')
+                            |list
+                            |tojson
+                        }},
+
+
+                    datasets: [
+                        {
+
+                            label:
+                                "Documentos",
+
+
+                            data:
+                                {{
+                                    documentos_categoria
+                                    |map(attribute='total')
+                                    |list
+                                    |tojson
+                                }},
+
+
+                            backgroundColor:
+                                "rgba(79,143,31,.82)",
+
+
+                            hoverBackgroundColor:
+                                INNOVAFILE_COLORS.dark,
+
+
+                            borderRadius:
+                                9,
+
+
+                            borderSkipped:
+                                false,
+
+
+                            barThickness:
+                                24
+
+                        }
+                    ]
+
+                },
+
+
+                options: {
+
+                    responsive:
+                        true,
+
+
+                    plugins: {
+
+                        legend: {
+                            display:
+                                false
+                        },
+
+
+                        tooltip: {
+
+                            backgroundColor:
+                                INNOVAFILE_COLORS.deep,
+
+
+                            titleColor:
+                                "#ffffff",
+
+
+                            bodyColor:
+                                "#ffffff"
+
+                        }
+
+                    },
+
+
+                    scales: {
+
+                        x: {
+
+                            grid: {
+                                display:
+                                    false
+                            },
+
+
+                            border: {
+                                display:
+                                    false
+                            },
+
+
+                            ticks: {
+                                color:
+                                    INNOVAFILE_COLORS.muted
+                            }
+
+                        },
+
+
+                        y: {
+
+                            beginAtZero:
+                                true,
+
+
+                            ticks: {
+
+                                precision:
+                                    0,
+
+                                color:
+                                    INNOVAFILE_COLORS.muted
+
+                            },
+
+
+                            border: {
+                                display:
+                                    false
+                            },
+
+
+                            grid: {
+                                color:
+                                    "rgba(79,143,31,.10)"
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+</script>
+
+{% endblock %}

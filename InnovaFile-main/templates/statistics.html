@@ -1,0 +1,798 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}
+Estadísticas | InnovaFile
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* ========================================================
+       ESTADÍSTICAS 
+    ======================================================== */
+
+    .statistics-page {
+        --st-deep: #0b2b1a;
+        --st-dark: #1f4d22;
+        --st-primary: #4f8f1f;
+        --st-medium: #72ad2b;
+        --st-light: #9bcb45;
+        --st-soft: #eaf4dd;
+
+        --st-text: #1c261d;
+        --st-muted: #71806f;
+        --st-border: #dce7d5;
+        --st-surface: #ffffff;
+        --st-background: #f5f8f1;
+    }
+
+
+    /* ========================================================
+       ENCABEZADO
+    ======================================================== */
+
+    .statistics-page .page-head {
+        display: flex;
+
+        align-items: flex-end;
+
+        justify-content: space-between;
+
+        gap: 20px;
+
+        margin-bottom: 24px;
+    }
+
+
+    .statistics-page .dashboard-kicker {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 6px;
+
+        margin-bottom: 7px;
+
+        color:
+            var(--st-primary);
+
+        font-size: 10px;
+        font-weight: 850;
+
+        letter-spacing: 1.4px;
+
+        text-transform: uppercase;
+    }
+
+
+    .statistics-page .page-title {
+        margin: 0;
+
+        color:
+            var(--st-deep);
+
+        font-size: 28px;
+        font-weight: 820;
+
+        letter-spacing: -.75px;
+    }
+
+
+    .statistics-page .page-subtitle {
+        max-width: 720px;
+
+        margin:
+            5px
+            0
+            0;
+
+        color:
+            var(--st-muted);
+
+        line-height: 1.6;
+    }
+
+
+    /* ========================================================
+       TARJETAS KPI
+    ======================================================== */
+
+    .statistics-page .dashboard-stat {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        height: 100%;
+
+        padding: 21px;
+
+        border:
+            1px solid
+            var(--st-border);
+
+        border-radius: 17px;
+
+        background:
+            var(--st-surface);
+
+        box-shadow:
+            0 6px 22px
+            rgba(31, 77, 34, .045);
+
+        transition:
+            transform .2s ease,
+            box-shadow .2s ease,
+            border-color .2s ease;
+    }
+
+
+    .statistics-page .dashboard-stat:hover {
+        border-color:
+            var(--st-light);
+
+        transform:
+            translateY(-3px);
+
+        box-shadow:
+            0 10px 30px
+            rgba(31, 77, 34, .10);
+    }
+
+
+    .statistics-page .stat-content {
+        display: flex;
+
+        flex-direction: column;
+    }
+
+
+    .statistics-page .stat-label {
+        color:
+            var(--st-muted);
+
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    .statistics-page .stat-number {
+        margin:
+            7px
+            0;
+
+        color:
+            var(--st-deep);
+
+        font-size: 31px;
+
+        line-height: 1.2;
+
+        letter-spacing: -1px;
+    }
+
+
+    .statistics-page .stat-description {
+        color: #8b9b86;
+
+        font-size: 11px;
+    }
+
+
+    .statistics-page .stat-icon {
+        display: grid;
+
+        place-items: center;
+
+        width: 48px;
+        height: 48px;
+
+        flex-shrink: 0;
+
+        border-radius: 14px;
+
+        color:
+            var(--st-primary);
+
+        background:
+            var(--st-soft);
+
+        font-size: 21px;
+    }
+
+
+    /* ========================================================
+       PANEL DE GRÁFICA
+    ======================================================== */
+
+    .statistics-chart-card {
+        overflow: hidden;
+
+        border:
+            1px solid
+            var(--st-border)
+            !important;
+
+        border-radius: 20px
+            !important;
+
+        background:
+            var(--st-surface);
+
+        box-shadow:
+            0 7px 26px
+            rgba(31, 77, 34, .055)
+            !important;
+    }
+
+
+    .statistics-chart-card .panel-head {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 12px;
+
+        padding:
+            20px
+            22px
+            0;
+    }
+
+
+    .statistics-chart-card .panel-title {
+        margin: 0;
+
+        color:
+            var(--st-deep);
+
+        font-size: 16px;
+        font-weight: 760;
+    }
+
+
+    .statistics-chart-card .panel-subtitle {
+        margin-top: 3px;
+
+        color:
+            var(--st-muted);
+
+        font-size: 12px;
+    }
+
+
+    .statistics-chart-card .card-body {
+        padding:
+            26px
+            22px
+            28px;
+    }
+
+
+    /* ========================================================
+       CONTENEDOR DE GRÁFICA
+    ======================================================== */
+
+    .statistics-chart-wrapper {
+        position: relative;
+
+        width: 100%;
+
+        max-width: 620px;
+
+        margin:
+            0
+            auto;
+    }
+
+
+    /* ========================================================
+       LEYENDA AUXILIAR
+    ======================================================== */
+
+    .statistics-chart-info {
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        padding:
+            7px
+            10px;
+
+        border:
+            1px solid
+            #dce8d4;
+
+        border-radius: 999px;
+
+        color:
+            var(--st-dark);
+
+        background:
+            #f3f8ee;
+
+        font-size: .68rem;
+        font-weight: 800;
+    }
+
+
+    .statistics-chart-info i {
+        color:
+            var(--st-primary);
+    }
+
+
+    /* ========================================================
+       RESPONSIVE
+    ======================================================== */
+
+    @media (
+        max-width: 768px
+    ) {
+
+        .statistics-page .page-head {
+            align-items: flex-start;
+
+            flex-direction: column;
+        }
+
+
+        .statistics-page .page-title {
+            font-size: 24px;
+        }
+
+
+        .statistics-chart-card .panel-head {
+            align-items: flex-start;
+
+            flex-direction: column;
+        }
+
+    }
+
+</style>
+
+
+<div class="statistics-page">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <div class="page-head">
+
+        <div>
+
+            <span class="dashboard-kicker">
+
+                <i class="bi bi-bar-chart-line"></i>
+
+                ANÁLISIS
+
+            </span>
+
+
+            <h2 class="page-title">
+                Estadísticas
+            </h2>
+
+
+            <p class="page-subtitle">
+
+                Indicadores generales para conocer el comportamiento
+                del repositorio documental.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         INDICADORES
+    ====================================================== -->
+
+    <div class="row g-3 mb-4">
+
+
+        {% for label, num, icon in [
+            ('Usuarios', usuarios, 'bi-people'),
+            ('Documentos', documentos, 'bi-file-earmark-text'),
+            ('Categorías', categorias, 'bi-folder2-open'),
+            ('Actividades', actividades, 'bi-activity')
+        ] %}
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="dashboard-stat">
+
+                <div class="stat-content">
+
+                    <span class="stat-label">
+                        {{ label }}
+                    </span>
+
+
+                    <strong class="stat-number">
+                        {{ num }}
+                    </strong>
+
+
+                    <span class="stat-description">
+                        Total registrado
+                    </span>
+
+                </div>
+
+
+                <div class="stat-icon">
+
+                    <i class="bi {{ icon }}"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {% endfor %}
+
+    </div>
+
+
+
+    <!-- =====================================================
+         DOCUMENTOS POR CATEGORÍA
+    ====================================================== -->
+
+    <div class="card statistics-chart-card">
+
+        <div class="panel-head">
+
+            <div>
+
+                <h3 class="panel-title">
+                    Documentos por categoría
+                </h3>
+
+
+                <div class="panel-subtitle">
+                    Distribución actual del contenido almacenado
+                </div>
+
+            </div>
+
+
+            <div class="statistics-chart-info">
+
+                <i class="bi bi-pie-chart"></i>
+
+                Distribución
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="statistics-chart-wrapper">
+
+                {% if documentos_categoria %}
+
+                    <canvas id="statsChart"></canvas>
+
+                {% else %}
+
+                    <div class="empty-state py-5">
+
+                        <div class="empty-icon">
+
+                            <i class="bi bi-pie-chart"></i>
+
+                        </div>
+
+                        No hay información suficiente para generar
+                        la gráfica.
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+<script
+    src="https://cdn.jsdelivr.net/npm/chart.js"
+></script>
+
+
+<script>
+
+    /* ========================================================
+       PALETA VERDE INNOVAFILE
+    ======================================================== */
+
+    const STATS_COLORS = {
+
+        deep:
+            "#0B2B1A",
+
+        dark:
+            "#1F4D22",
+
+        primary:
+            "#4F8F1F",
+
+        medium:
+            "#72AD2B",
+
+        light:
+            "#9BCB45",
+
+        soft:
+            "#EAF4DD",
+
+        muted:
+            "#71806F"
+
+    };
+
+
+    /* ========================================================
+       CONFIGURACIÓN GENERAL CHART.JS
+    ======================================================== */
+
+    Chart.defaults.font.family =
+        "'Inter', 'Segoe UI', sans-serif";
+
+
+    Chart.defaults.color =
+        STATS_COLORS.muted;
+
+
+
+    /* ========================================================
+       GRÁFICA DOCUMENTOS POR CATEGORÍA
+    ======================================================== */
+
+    const statsCanvas =
+        document.getElementById(
+            "statsChart"
+        );
+
+
+    if (statsCanvas) {
+
+        new Chart(
+            statsCanvas,
+            {
+
+                type:
+                    "doughnut",
+
+
+                data: {
+
+                    labels:
+                        {{
+                            documentos_categoria
+                            |map(attribute='name')
+                            |list
+                            |tojson
+                        }},
+
+
+                    datasets: [
+                        {
+
+                            data:
+                                {{
+                                    documentos_categoria
+                                    |map(attribute='total')
+                                    |list
+                                    |tojson
+                                }},
+
+
+                            backgroundColor: [
+
+                                "#0B2B1A",
+
+                                "#1F4D22",
+
+                                "#315F27",
+
+                                "#4F8F1F",
+
+                                "#72AD2B",
+
+                                "#9BCB45",
+
+                                "#B8D878",
+
+                                "#D0E7A7",
+
+                                "#EAF4DD"
+
+                            ],
+
+
+                            borderWidth:
+                                4,
+
+
+                            borderColor:
+                                "#ffffff",
+
+
+                            hoverBorderColor:
+                                "#ffffff",
+
+
+                            hoverOffset:
+                                7
+
+                        }
+                    ]
+
+                },
+
+
+                options: {
+
+                    responsive:
+                        true,
+
+
+                    maintainAspectRatio:
+                        true,
+
+
+                    cutout:
+                        "68%",
+
+
+                    interaction: {
+
+                        intersect:
+                            false
+
+                    },
+
+
+                    plugins: {
+
+                        legend: {
+
+                            position:
+                                "bottom",
+
+
+                            labels: {
+
+                                usePointStyle:
+                                    true,
+
+
+                                pointStyle:
+                                    "circle",
+
+
+                                padding:
+                                    18,
+
+
+                                boxWidth:
+                                    9,
+
+
+                                color:
+                                    STATS_COLORS.muted,
+
+
+                                font: {
+
+                                    size:
+                                        11,
+
+                                    weight:
+                                        "600"
+
+                                }
+
+                            }
+
+                        },
+
+
+                        tooltip: {
+
+                            backgroundColor:
+                                STATS_COLORS.deep,
+
+
+                            titleColor:
+                                "#ffffff",
+
+
+                            bodyColor:
+                                "#ffffff",
+
+
+                            borderColor:
+                                STATS_COLORS.primary,
+
+
+                            borderWidth:
+                                1,
+
+
+                            padding:
+                                12,
+
+
+                            displayColors:
+                                true,
+
+
+                            callbacks: {
+
+                                label:
+                                    function(context) {
+
+                                        const value =
+                                            context.raw || 0;
+
+
+                                        return (
+                                            context.label
+                                            +
+                                            ": "
+                                            +
+                                            value
+                                            +
+                                            " documento(s)"
+                                        );
+
+                                    }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+</script>
+
+{% endblock %}

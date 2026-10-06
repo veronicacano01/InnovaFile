@@ -1,0 +1,193 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}
+Papelera | InnovaFile
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-intro">
+
+    <div>
+
+        <span class="dashboard-kicker">
+            DOCUMENTOS
+        </span>
+
+        <h2 class="dashboard-title">
+            Papelera
+        </h2>
+
+        <p class="dashboard-subtitle">
+            Documentos eliminados temporalmente.
+        </p>
+
+    </div>
+
+    <div>
+
+        <a
+            href="{{ url_for('documents.index') }}"
+            class="btn btn-light"
+        >
+            <i class="bi bi-arrow-left"></i>
+            Volver
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div class="panel-head">
+
+        <div>
+
+            <h3 class="panel-title">
+                Documentos eliminados
+            </h3>
+
+            <div class="panel-subtitle">
+                {{ pagination.total }} registro(s)
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table align-middle">
+
+                <thead>
+
+                    <tr>
+                        <th>Documento</th>
+                        <th>Categoría</th>
+                        <th>Responsable</th>
+                        <th>Eliminado</th>
+                        <th>Acciones</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for document in documents %}
+
+                    <tr>
+
+                        <td>
+
+                            <div class="doc-title">
+                                {{ document.title }}
+                            </div>
+
+                            <div class="doc-meta">
+                                {{ document.file_name }}
+                            </div>
+
+                        </td>
+
+                        <td>
+                            {{ document.category.name }}
+                        </td>
+
+                        <td>
+                            {{ document.user.name }}
+                        </td>
+
+                        <td>
+
+                            {% if document.deleted_at %}
+
+                                {{ document.deleted_at.strftime('%d/%m/%Y %H:%M') }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <div class="d-flex gap-2">
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('documents.restore', document_id=document._id) }}"
+                                >
+
+                                    <button
+                                        class="btn btn-sm btn-success"
+                                        type="submit"
+                                    >
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                        Restaurar
+                                    </button>
+
+                                </form>
+
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('documents.permanent_delete', document_id=document._id) }}"
+                                    onsubmit="return confirm('¿Eliminar definitivamente este documento? Esta acción no se puede deshacer.');"
+                                >
+
+                                    <button
+                                        class="btn btn-sm btn-danger"
+                                        type="submit"
+                                    >
+                                        <i class="bi bi-trash3"></i>
+                                        Eliminar
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="5">
+
+                            <div class="empty-state py-5">
+
+                                <div class="empty-icon">
+                                    <i class="bi bi-trash"></i>
+                                </div>
+
+                                La papelera está vacía.
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,34 @@
+import os
+
+
+class Config:
+
+    # En producción, SECRET_KEY debe definirse en el archivo .env.
+    SECRET_KEY = os.getenv("SECRET_KEY") or os.urandom(32)
+
+    MONGO_URI = os.getenv(
+        "MONGO_URI",
+        "mongodb://127.0.0.1:27017/"
+    )
+
+    MONGO_DB = os.getenv(
+        "MONGO_DB",
+        "innovafile"
+    )
+
+    # Si CLOUD_DOCUMENTS_FOLDER apunta a una carpeta sincronizada con un
+    # servicio de nube (Drive para escritorio, OneDrive, Dropbox, etc.),
+    # los documentos se guardarán allí. La sincronización la gestiona ese cliente.
+    CLOUD_DOCUMENTS_FOLDER = os.getenv("CLOUD_DOCUMENTS_FOLDER", "").strip()
+    UPLOAD_FOLDER = CLOUD_DOCUMENTS_FOLDER or os.getenv(
+        "UPLOAD_FOLDER", os.path.join("static", "uploads", "documents")
+    )
+
+    MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", str(50 * 1024 * 1024)))
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
+    GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip()
+    GEMINI_ENABLED = bool(GEMINI_API_KEY)
+    # El texto completo solo se comparte con Gemini si se activa expresamente.
+    GEMINI_SEND_DOCUMENT_CONTENT = os.getenv("GEMINI_SEND_DOCUMENT_CONTENT", "true").lower() == "true"
+    SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true"
+    PREFERRED_URL_SCHEME = "https" if SESSION_COOKIE_SECURE else "http"

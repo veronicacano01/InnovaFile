@@ -1,0 +1,276 @@
+<aside class="innova-sidebar">
+
+  <div class="sidebar-brand">
+
+    <div class="brand-mark">
+      IF
+    </div>
+
+    <div class="brand-text">
+
+      <span class="brand-name">
+        Innova<span>File</span>
+      </span>
+
+      <small>
+        Intelligent File System
+      </small>
+
+    </div>
+
+  </div>
+
+
+  <nav class="sidebar-nav">
+
+
+    <!-- =====================================================
+         PRINCIPAL
+    ====================================================== -->
+
+    <div class="nav-section">
+
+      <span class="nav-section-title">
+        PRINCIPAL
+      </span>
+
+      <a
+        href="{{ url_for('dashboard.index') }}"
+        class="sidebar-item {% if request.endpoint == 'dashboard.index' %}active{% endif %}"
+      >
+
+        <i class="bi bi-grid-1x2-fill"></i>
+
+        <span>
+          Inicio
+        </span>
+
+      </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         GESTIÓN
+    ====================================================== -->
+
+    <div class="nav-section">
+
+      <span class="nav-section-title">
+        GESTIÓN
+      </span>
+
+
+      {% if auth_user and has_permission('users.view') %}
+
+      <a
+        href="{{ url_for('users.index') }}"
+        class="sidebar-item {% if request.blueprint == 'users' %}active{% endif %}"
+      >
+
+        <i class="bi bi-people"></i>
+
+        <span>
+          Usuarios
+        </span>
+
+      </a>
+
+      {% endif %}
+
+
+      <a
+        href="{{ url_for('documents.index') }}"
+        class="sidebar-item {% if request.endpoint == 'documents.index' %}active{% endif %}"
+      >
+
+        <i class="bi bi-file-earmark-text"></i>
+
+        <span>
+          Documentos
+        </span>
+
+      </a>
+
+
+      {% if auth_user and has_permission('documents.delete') %}
+
+      <a
+        href="{{ url_for('documents.trash') }}"
+        class="sidebar-item {% if request.endpoint == 'documents.trash' %}active{% endif %}"
+      >
+
+        <i class="bi bi-trash"></i>
+
+        <span>
+          Papelera
+        </span>
+
+      </a>
+
+      {% endif %}
+
+
+      <a
+        href="{{ url_for('categories.index') }}"
+        class="sidebar-item {% if request.blueprint == 'categories' %}active{% endif %}"
+      >
+
+        <i class="bi bi-folder2-open"></i>
+
+        <span>
+          Categorías
+        </span>
+
+      </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         CONTROL
+    ====================================================== -->
+
+    <div class="nav-section">
+
+      <span class="nav-section-title">
+        CONTROL
+      </span>
+
+
+      <a
+        href="{{ url_for('history.index') }}"
+        class="sidebar-item {% if request.blueprint == 'history' %}active{% endif %}"
+      >
+
+        <i class="bi bi-clock-history"></i>
+
+        <span>
+          Actividad
+        </span>
+
+      </a>
+
+
+      <a
+        href="{{ url_for('dashboard.statistics') }}"
+        class="sidebar-item {% if request.endpoint == 'dashboard.statistics' %}active{% endif %}"
+      >
+
+        <i class="bi bi-bar-chart"></i>
+
+        <span>
+          Estadísticas
+        </span>
+
+      </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         INTELIGENCIA
+    ====================================================== -->
+
+    <div class="nav-section">
+
+      <span class="nav-section-title">
+        INTELIGENCIA
+      </span>
+
+
+      <a
+        href="{{ url_for('documents.ai') }}"
+        class="sidebar-item {% if request.endpoint == 'documents.ai' %}active{% endif %}"
+      >
+
+        <i class="bi bi-stars"></i>
+
+        <span>
+          Búsqueda IA
+        </span>
+
+      </a>
+
+
+      <a
+        href="{{ url_for('documents.classification') }}"
+        class="sidebar-item {% if request.endpoint == 'documents.classification' %}active{% endif %}"
+      >
+
+        <i class="bi bi-magic"></i>
+
+        <span>
+          Clasificación
+        </span>
+
+      </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         SISTEMA - SOLO ADMINISTRADOR
+    ====================================================== -->
+
+    {% if auth_user and has_permission('users.edit') %}
+
+    <div class="nav-section">
+
+      <span class="nav-section-title">
+        SISTEMA
+      </span>
+
+
+      <a
+        href="{{ url_for('administration.index') }}"
+        class="sidebar-item {% if request.blueprint == 'administration' %}active{% endif %}"
+      >
+
+        <i class="bi bi-gear"></i>
+
+        <span>
+          Administración
+        </span>
+
+      </a>
+
+    </div>
+
+    {% endif %}
+
+
+  </nav>
+
+
+  <!-- =======================================================
+       USUARIO ACTUAL
+  ======================================================== -->
+
+  {% if auth_user %}
+
+  <div class="sidebar-user">
+
+    <div class="user-avatar">
+      {{ auth_user.name[0]|upper }}
+    </div>
+
+    <div class="user-info">
+
+      <strong>
+        {{ auth_user.name }}
+      </strong>
+
+      <span>
+        {{ auth_user.role.name }}
+      </span>
+
+    </div>
+
+    <i class="bi bi-three-dots"></i>
+
+  </div>
+
+  {% endif %}
+
+</aside>

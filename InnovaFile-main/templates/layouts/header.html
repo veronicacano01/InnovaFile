@@ -1,0 +1,10 @@
+<nav class="innova-header">
+  <div class="header-page"><span class="header-eyebrow">ESPACIO DE TRABAJO</span><h1>{{ request.path.strip('/').split('/')[0]|capitalize if request.path != '/dashboard' else 'Inicio' }}</h1></div>
+  {% if auth_user %}
+  <div class="header-actions">
+    <button class="header-icon-btn" type="button"><i class="bi bi-bell"></i></button>
+    <div class="header-user"><div class="header-avatar">{{ auth_user.name[0]|upper }}</div><div class="header-user-info"><strong>{{ auth_user.name }}</strong><span>{{ auth_user.role.name }}</span></div></div>
+    <div class="dropdown"><button class="header-menu-btn" data-bs-toggle="dropdown"><i class="bi bi-chevron-down"></i></button><ul class="dropdown-menu dropdown-menu-end user-dropdown"><li><div class="dropdown-user-info"><strong>{{ auth_user.name }}</strong><small>{{ auth_user.email }}</small></div></li><li><hr class="dropdown-divider"></li><li><form action="{{ url_for('auth.logout') }}" method="POST"><button class="dropdown-item logout-item"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button></form></li></ul></div>
+  </div>
+  {% endif %}
+</nav>

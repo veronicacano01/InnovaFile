@@ -1,0 +1,1418 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}
+Inteligencia documental | InnovaFile
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* ========================================================
+       INTELIGENCIA DOCUMENTAL 
+    ======================================================== */
+
+    .ai-page {
+        --ai-deep: #0b2b1a;
+        --ai-dark: #1f4d22;
+        --ai-primary: #4f8f1f;
+        --ai-medium: #72ad2b;
+        --ai-light: #9bcb45;
+        --ai-soft: #eaf4dd;
+
+        --ai-text: #1c261d;
+        --ai-muted: #71806f;
+        --ai-border: #dce7d5;
+        --ai-surface: #ffffff;
+        --ai-background: #f5f8f1;
+    }
+
+
+    /* ========================================================
+       HERO
+    ======================================================== */
+
+    .ai-hero {
+        position: relative;
+
+        overflow: hidden;
+
+        margin-bottom: 24px;
+
+        padding:
+            30px
+            32px;
+
+        border-radius: 24px;
+
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                #0b2b1a 0%,
+                #1f4d22 55%,
+                #4f8f1f 100%
+            );
+
+        box-shadow:
+            0 18px 45px
+            rgba(31, 77, 34, .18);
+    }
+
+
+    .ai-hero::before {
+        content: "";
+
+        position: absolute;
+
+        top: -130px;
+        right: -90px;
+
+        width: 280px;
+        height: 280px;
+
+        border-radius: 50%;
+
+        background:
+            rgba(255, 255, 255, .08);
+    }
+
+
+    .ai-hero::after {
+        content: "";
+
+        position: absolute;
+
+        right: 130px;
+        bottom: -150px;
+
+        width: 210px;
+        height: 210px;
+
+        border-radius: 50%;
+
+        background:
+            rgba(255, 255, 255, .05);
+    }
+
+
+    .ai-hero-content {
+        position: relative;
+
+        z-index: 2;
+    }
+
+
+    .ai-kicker {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 7px;
+
+        margin-bottom: 9px;
+
+        color: #d8efb9;
+
+        font-size: .72rem;
+        font-weight: 850;
+
+        letter-spacing: 1.4px;
+
+        text-transform: uppercase;
+    }
+
+
+    .ai-title {
+        margin: 0;
+
+        color: #ffffff;
+
+        font-size: 2rem;
+        font-weight: 850;
+
+        letter-spacing: -.8px;
+    }
+
+
+    .ai-description {
+        max-width: 720px;
+
+        margin:
+            10px
+            0
+            0;
+
+        color:
+            rgba(255, 255, 255, .78);
+
+        font-size: .94rem;
+
+        line-height: 1.7;
+    }
+
+
+    .ai-status {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 7px;
+
+        margin-top: 17px;
+
+        padding:
+            7px
+            11px;
+
+        border:
+            1px solid
+            rgba(255, 255, 255, .14);
+
+        border-radius: 10px;
+
+        color: #ffffff;
+
+        background:
+            rgba(255, 255, 255, .08);
+
+        font-size: .72rem;
+        font-weight: 700;
+    }
+
+
+    /* ========================================================
+       LAYOUT
+    ======================================================== */
+
+    .ai-grid {
+        display: grid;
+
+        grid-template-columns:
+            minmax(0, 1.05fr)
+            minmax(320px, .95fr);
+
+        gap: 22px;
+    }
+
+
+    /* ========================================================
+       CARD
+    ======================================================== */
+
+    .ai-card {
+        overflow: hidden;
+
+        border:
+            1px solid
+            var(--ai-border);
+
+        border-radius: 20px;
+
+        background:
+            var(--ai-surface);
+
+        box-shadow:
+            0 8px 28px
+            rgba(31, 77, 34, .05);
+    }
+
+
+    .ai-card-header {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 14px;
+
+        padding:
+            20px
+            22px
+            15px;
+
+        border-bottom:
+            1px solid
+            #edf3e9;
+    }
+
+
+    .ai-card-title {
+        margin: 0;
+
+        color:
+            var(--ai-dark);
+
+        font-size: .96rem;
+        font-weight: 800;
+    }
+
+
+    .ai-card-subtitle {
+        margin-top: 4px;
+
+        color:
+            var(--ai-muted);
+
+        font-size: .73rem;
+    }
+
+
+    .ai-card-body {
+        padding: 22px;
+    }
+
+
+    /* ========================================================
+       ICONOS
+    ======================================================== */
+
+    .ai-card-icon {
+        display: grid;
+
+        place-items: center;
+
+        width: 42px;
+        height: 42px;
+
+        flex-shrink: 0;
+
+        border-radius: 13px;
+
+        color:
+            var(--ai-primary);
+
+        background:
+            var(--ai-soft);
+
+        font-size: 1rem;
+    }
+
+
+    /* ========================================================
+       BUSCADOR
+    ======================================================== */
+
+    .ai-search-box {
+        padding: 18px;
+
+        border:
+            1px solid
+            #dce8d4;
+
+        border-radius: 16px;
+
+        background:
+            linear-gradient(
+                145deg,
+                #ffffff,
+                #f7faf4
+            );
+    }
+
+
+    .ai-search-label {
+        display: block;
+
+        margin-bottom: 9px;
+
+        color:
+            var(--ai-dark);
+
+        font-size: .78rem;
+        font-weight: 800;
+    }
+
+
+    .ai-search-wrapper {
+        position: relative;
+    }
+
+
+    .ai-search-wrapper > i {
+        position: absolute;
+
+        top: 50%;
+        left: 15px;
+
+        z-index: 2;
+
+        color: #7f9375;
+
+        transform:
+            translateY(-50%);
+    }
+
+
+    .ai-search-input {
+        height: 52px;
+
+        padding-left: 43px;
+        padding-right: 130px;
+
+        border:
+            1px solid
+            #d4dfcf;
+
+        border-radius: 13px;
+
+        font-size: .88rem;
+    }
+
+
+    .ai-search-input:focus {
+        border-color:
+            var(--ai-light);
+
+        box-shadow:
+            0 0 0 4px
+            rgba(79, 143, 31, .10);
+    }
+
+
+    .ai-search-button {
+        position: absolute;
+
+        top: 5px;
+        right: 5px;
+
+        height: 42px;
+
+        padding:
+            0
+            17px;
+
+        border: 0;
+
+        border-radius: 10px;
+
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                #72ad2b,
+                #4f8f1f
+            );
+
+        font-size: .78rem;
+        font-weight: 800;
+
+        box-shadow:
+            0 5px 14px
+            rgba(79, 143, 31, .22);
+    }
+
+
+    .ai-search-button:hover {
+        background:
+            linear-gradient(
+                135deg,
+                #4f8f1f,
+                #1f4d22
+            );
+    }
+
+
+    .ai-examples {
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 7px;
+
+        margin-top: 12px;
+    }
+
+
+    .ai-example {
+        padding:
+            6px
+            9px;
+
+        border:
+            1px solid
+            #dce8d4;
+
+        border-radius: 999px;
+
+        color: #5c6e56;
+
+        background: #f7faf4;
+
+        font-size: .68rem;
+
+        cursor: pointer;
+
+        transition:
+            .18s ease;
+    }
+
+
+    .ai-example:hover {
+        color:
+            var(--ai-primary);
+
+        border-color:
+            #c7dcb8;
+
+        background:
+            var(--ai-soft);
+    }
+
+
+    /* ========================================================
+       CAPACIDADES
+    ======================================================== */
+
+    .ai-capabilities {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+
+        margin-top: 18px;
+    }
+
+
+    .ai-capability {
+        display: flex;
+
+        align-items: flex-start;
+
+        gap: 11px;
+
+        padding: 14px;
+
+        border:
+            1px solid
+            #e4ece0;
+
+        border-radius: 14px;
+
+        background: #ffffff;
+    }
+
+
+    .ai-capability-icon {
+        display: grid;
+
+        place-items: center;
+
+        width: 35px;
+        height: 35px;
+
+        flex-shrink: 0;
+
+        border-radius: 10px;
+
+        color:
+            var(--ai-primary);
+
+        background:
+            var(--ai-soft);
+
+        font-size: .88rem;
+    }
+
+
+    .ai-capability strong {
+        display: block;
+
+        color:
+            var(--ai-dark);
+
+        font-size: .75rem;
+    }
+
+
+    .ai-capability span {
+        display: block;
+
+        margin-top: 3px;
+
+        color:
+            var(--ai-muted);
+
+        font-size: .67rem;
+
+        line-height: 1.45;
+    }
+
+
+    /* ========================================================
+       RESPUESTA IA
+    ======================================================== */
+
+    .ai-answer-box {
+        padding: 19px;
+
+        border:
+            1px solid
+            #dce8d4;
+
+        border-radius: 16px;
+
+        background:
+            linear-gradient(
+                145deg,
+                #f8fbf5,
+                #eef6e8
+            );
+    }
+
+
+    .ai-answer-head {
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        margin-bottom: 11px;
+    }
+
+
+    .ai-answer-mark {
+        display: grid;
+
+        place-items: center;
+
+        width: 36px;
+        height: 36px;
+
+        border-radius: 11px;
+
+        color: #ffffff;
+
+        background:
+            linear-gradient(
+                135deg,
+                #4f8f1f,
+                #1f4d22
+            );
+
+        font-size: .95rem;
+    }
+
+
+    .ai-answer-title {
+        color:
+            var(--ai-dark);
+
+        font-size: .82rem;
+        font-weight: 800;
+    }
+
+
+    .ai-answer-subtitle {
+        margin-top: 1px;
+
+        color:
+            var(--ai-muted);
+
+        font-size: .65rem;
+    }
+
+
+    .ai-answer-text {
+        margin: 0;
+
+        color: #4d5d49;
+
+        font-size: .82rem;
+
+        line-height: 1.7;
+    }
+
+
+    /* ========================================================
+       ESTADO VACÍO
+    ======================================================== */
+
+    .ai-empty {
+        padding:
+            42px
+            20px;
+
+        text-align: center;
+    }
+
+
+    .ai-empty-icon {
+        display: grid;
+
+        place-items: center;
+
+        width: 62px;
+        height: 62px;
+
+        margin:
+            0
+            auto
+            14px;
+
+        border-radius: 18px;
+
+        color:
+            var(--ai-primary);
+
+        background:
+            var(--ai-soft);
+
+        font-size: 1.45rem;
+    }
+
+
+    .ai-empty-title {
+        color:
+            var(--ai-dark);
+
+        font-size: .88rem;
+        font-weight: 800;
+    }
+
+
+    .ai-empty-text {
+        max-width: 330px;
+
+        margin:
+            6px
+            auto
+            0;
+
+        color:
+            var(--ai-muted);
+
+        font-size: .72rem;
+
+        line-height: 1.55;
+    }
+
+
+    /* ========================================================
+       RESULTADOS
+    ======================================================== */
+
+    .ai-results {
+        margin-top: 22px;
+    }
+
+
+    .ai-result-item {
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        padding:
+            13px
+            0;
+
+        border-bottom:
+            1px solid
+            #edf3e9;
+    }
+
+
+    .ai-result-item:last-child {
+        border-bottom: 0;
+    }
+
+
+    .ai-result-icon {
+        display: grid;
+
+        place-items: center;
+
+        width: 42px;
+        height: 42px;
+
+        flex-shrink: 0;
+
+        border-radius: 12px;
+
+        color:
+            var(--ai-primary);
+
+        background:
+            var(--ai-soft);
+
+        font-size: 1rem;
+    }
+
+
+    .ai-result-info {
+        flex: 1;
+
+        min-width: 0;
+    }
+
+
+    .ai-result-title {
+        overflow: hidden;
+
+        color:
+            var(--ai-dark);
+
+        font-size: .79rem;
+        font-weight: 800;
+
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+    }
+
+
+    .ai-result-meta {
+        margin-top: 4px;
+
+        color:
+            var(--ai-muted);
+
+        font-size: .67rem;
+    }
+
+
+    .ai-result-type {
+        padding:
+            4px
+            7px;
+
+        border-radius: 7px;
+
+        color:
+            var(--ai-primary);
+
+        background:
+            var(--ai-soft);
+
+        font-size: .62rem;
+        font-weight: 800;
+    }
+
+
+    .ai-result-item .btn-light {
+        border:
+            1px solid
+            #dde8d7;
+
+        color:
+            var(--ai-dark);
+
+        background: #f8faf6;
+    }
+
+
+    .ai-result-item .btn-light:hover {
+        border-color:
+            #c5dbb5;
+
+        color:
+            var(--ai-primary);
+
+        background:
+            var(--ai-soft);
+    }
+
+
+    /* ========================================================
+       RESPONSIVE
+    ======================================================== */
+
+    @media (
+        max-width: 991px
+    ) {
+
+        .ai-grid {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+
+    @media (
+        max-width: 575px
+    ) {
+
+        .ai-hero {
+            padding: 23px;
+        }
+
+
+        .ai-title {
+            font-size: 1.55rem;
+        }
+
+
+        .ai-search-input {
+            padding-right: 15px;
+        }
+
+
+        .ai-search-button {
+            position: static;
+
+            width: 100%;
+
+            margin-top: 10px;
+        }
+
+
+        .ai-capabilities {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+</style>
+
+
+<div class="ai-page">
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="ai-hero">
+
+        <div class="ai-hero-content">
+
+            <div class="ai-kicker">
+
+                <i class="bi bi-stars"></i>
+
+                INTELIGENCIA DOCUMENTAL
+
+            </div>
+
+
+            <h1 class="ai-title">
+                Asistente inteligente de InnovaFile
+            </h1>
+
+
+            <p class="ai-description">
+
+                Realiza consultas en lenguaje natural y encuentra
+                documentos relacionados de manera más rápida dentro
+                del repositorio.
+
+            </p>
+
+
+            <div class="ai-status">
+
+                <i class="bi bi-cpu"></i>
+
+                Motor inteligente activo
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CONTENIDO
+    ====================================================== -->
+
+    <div class="ai-grid">
+
+
+        <!-- CONSULTA -->
+
+        <div class="ai-card">
+
+            <div class="ai-card-header">
+
+                <div>
+
+                    <h3 class="ai-card-title">
+                        Consulta inteligente
+                    </h3>
+
+                    <div class="ai-card-subtitle">
+                        Escribe lo que necesitas encontrar.
+                    </div>
+
+                </div>
+
+
+                <div class="ai-card-icon">
+
+                    <i class="bi bi-search"></i>
+
+                </div>
+
+            </div>
+
+
+            <div class="ai-card-body">
+
+                <form method="POST">
+
+                    <div class="ai-search-box">
+
+                        <label
+                            for="aiQuestion"
+                            class="ai-search-label"
+                        >
+                            ¿Qué necesitas buscar?
+                        </label>
+
+
+                        <div class="ai-search-wrapper">
+
+                            <i class="bi bi-stars"></i>
+
+
+                            <input
+                                type="text"
+                                id="aiQuestion"
+                                class="form-control ai-search-input"
+                                name="question"
+                                value="{{ question or '' }}"
+                                placeholder="Ej. Encuentra los contratos registrados este año"
+                                autocomplete="off"
+                                required
+                            >
+
+
+                            <button
+                                type="submit"
+                                class="ai-search-button"
+                            >
+
+                                <i class="bi bi-send me-1"></i>
+
+                                Consultar
+
+                            </button>
+
+                        </div>
+
+
+                        <div class="ai-examples">
+
+                            <button
+                                type="button"
+                                class="ai-example"
+                                data-query="Muéstrame los contratos recientes"
+                            >
+                                Contratos recientes
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="ai-example"
+                                data-query="Busca documentos PDF"
+                            >
+                                Documentos PDF
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="ai-example"
+                                data-query="Muéstrame documentos relacionados con servicios"
+                            >
+                                Servicios
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="ai-example"
+                                data-query="Busca los documentos más recientes"
+                            >
+                                Más recientes
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+
+
+                <!-- CAPACIDADES -->
+
+                <div class="ai-capabilities">
+
+
+                    <div class="ai-capability">
+
+                        <div class="ai-capability-icon">
+                            <i class="bi bi-search"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Búsqueda contextual
+                            </strong>
+
+                            <span>
+                                Encuentra documentos relacionados
+                                con palabras y conceptos.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="ai-capability">
+
+                        <div class="ai-capability-icon">
+                            <i class="bi bi-tags"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Clasificación
+                            </strong>
+
+                            <span>
+                                Identifica posibles categorías
+                                relacionadas.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="ai-capability">
+
+                        <div class="ai-capability-icon">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Documentos relacionados
+                            </strong>
+
+                            <span>
+                                Localiza archivos similares
+                                dentro del repositorio.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="ai-capability">
+
+                        <div class="ai-capability-icon">
+                            <i class="bi bi-lightning"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Consulta rápida
+                            </strong>
+
+                            <span>
+                                Reduce el tiempo necesario para
+                                localizar información.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- RESPUESTA -->
+
+        <div class="ai-card">
+
+            <div class="ai-card-header">
+
+                <div>
+
+                    <h3 class="ai-card-title">
+                        Respuesta del asistente
+                    </h3>
+
+                    <div class="ai-card-subtitle">
+                        Interpretación de la consulta realizada.
+                    </div>
+
+                </div>
+
+
+                <div class="ai-card-icon">
+
+                    <i class="bi bi-robot"></i>
+
+                </div>
+
+            </div>
+
+
+            <div class="ai-card-body">
+
+
+                {% if respuesta %}
+
+                    <div class="ai-answer-box">
+
+                        <div class="ai-answer-head">
+
+                            <div class="ai-answer-mark">
+
+                                <i class="bi bi-stars"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <div class="ai-answer-title">
+                                    Resultado de InnovaFile AI
+                                </div>
+
+                                <div class="ai-answer-subtitle">
+                                    Respuesta generada a partir
+                                    del repositorio documental.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <p class="ai-answer-text">
+                            {{ respuesta }}
+                        </p>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="ai-empty">
+
+                        <div class="ai-empty-icon">
+
+                            <i class="bi bi-robot"></i>
+
+                        </div>
+
+
+                        <div class="ai-empty-title">
+                            Esperando una consulta
+                        </div>
+
+
+                        <div class="ai-empty-text">
+
+                            Escribe una pregunta en el buscador
+                            para que InnovaFile analice los
+                            documentos disponibles.
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         DOCUMENTOS ENCONTRADOS
+    ====================================================== -->
+
+    {% if documents is defined and documents %}
+
+        <div class="ai-card ai-results">
+
+            <div class="ai-card-header">
+
+                <div>
+
+                    <h3 class="ai-card-title">
+                        Documentos encontrados
+                    </h3>
+
+                    <div class="ai-card-subtitle">
+                        Resultados relacionados con tu consulta.
+                    </div>
+
+                </div>
+
+
+                <div class="ai-card-icon">
+
+                    <i class="bi bi-files"></i>
+
+                </div>
+
+            </div>
+
+
+            <div class="ai-card-body">
+
+                {% for document in documents %}
+
+                    <div class="ai-result-item">
+
+                        <div class="ai-result-icon">
+
+                            {% if document.file_type == 'pdf' %}
+
+                                <i class="bi bi-file-earmark-pdf"></i>
+
+                            {% elif document.file_type in ['doc', 'docx'] %}
+
+                                <i class="bi bi-file-earmark-word"></i>
+
+                            {% elif document.file_type in ['xls', 'xlsx', 'csv'] %}
+
+                                <i class="bi bi-file-earmark-spreadsheet"></i>
+
+                            {% elif document.file_type in ['jpg', 'jpeg', 'png'] %}
+
+                                <i class="bi bi-file-earmark-image"></i>
+
+                            {% else %}
+
+                                <i class="bi bi-file-earmark-text"></i>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="ai-result-info">
+
+                            <div class="ai-result-title">
+                                {{ document.title }}
+                            </div>
+
+
+                            <div class="ai-result-meta">
+
+                                {% if document.description %}
+
+                                    {{ document.description }}
+
+                                {% else %}
+
+                                    Sin descripción
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="ai-result-type">
+
+                            {{ document.file_type|default('archivo')|upper }}
+
+                        </span>
+
+
+                        <a
+                            href="{{ url_for('documents.show', document_id=document._id) }}"
+                            class="btn btn-sm btn-light"
+                            title="Ver documento"
+                        >
+
+                            <i class="bi bi-arrow-up-right"></i>
+
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            const input =
+                document.getElementById(
+                    "aiQuestion"
+                );
+
+
+            document
+                .querySelectorAll(
+                    ".ai-example"
+                )
+                .forEach(
+                    function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            function () {
+
+                                if (!input) {
+                                    return;
+                                }
+
+
+                                input.value =
+                                    button.dataset.query
+                                    || "";
+
+
+                                input.focus();
+
+                            }
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+</script>
+
+{% endblock %}

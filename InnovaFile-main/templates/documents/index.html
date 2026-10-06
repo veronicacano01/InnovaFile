@@ -1,0 +1,928 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}
+Documentos | InnovaFile
+{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+
+    <div>
+
+        <span class="dashboard-kicker">
+            GESTIÓN DOCUMENTAL
+        </span>
+
+        <h2 class="page-title">
+            Documentos
+        </h2>
+
+        <p class="page-subtitle">
+            InnovaFile organiza automáticamente tus documentos con ayuda de Gemini.
+        </p>
+
+    </div>
+
+
+
+
+</div>
+
+
+<!-- ========================================================
+     BÚSQUEDA AVANZADA
+========================================================= -->
+
+<div class="card mb-4 advanced-filters" style="display:none">
+
+    <div class="panel-head">
+
+        <div>
+
+            <h3 class="panel-title">
+                Búsqueda avanzada
+            </h3>
+
+            <div class="panel-subtitle">
+                Localiza documentos utilizando uno o varios filtros.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <form
+            method="GET"
+            action="{{ url_for('documents.index') }}"
+        >
+
+            <div class="row g-3">
+
+
+                <!-- TEXTO -->
+
+                <div class="col-xl-4 col-md-6">
+
+                    <label class="form-label">
+                        Buscar
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input
+                            type="text"
+                            name="search"
+                            class="form-control"
+                            placeholder="Título, descripción o archivo..."
+                            value="{{ filters.search }}"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- CATEGORÍA -->
+
+                <div class="col-xl-2 col-md-6">
+
+                    <label class="form-label">
+                        Categoría
+                    </label>
+
+                    <select
+                        name="category_id"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            Todas
+                        </option>
+
+                        {% for category in categories %}
+
+                        <option
+                            value="{{ category._id }}"
+                            {% if filters.category_id == category._id|string %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ category.name }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- RESPONSABLE -->
+
+                <div class="col-xl-2 col-md-6">
+
+                    <label class="form-label">
+                        Responsable
+                    </label>
+
+                    <select
+                        name="user_id"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            Todos
+                        </option>
+
+                        {% for user in users %}
+
+                        <option
+                            value="{{ user._id }}"
+                            {% if filters.user_id == user._id|string %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ user.name }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- TIPO -->
+
+                <div class="col-xl-2 col-md-6">
+
+                    <label class="form-label">
+                        Tipo
+                    </label>
+
+                    <select
+                        name="file_type"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            Todos
+                        </option>
+
+                        {% for file_type in file_types %}
+
+                        <option
+                            value="{{ file_type }}"
+                            {% if filters.file_type == file_type %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ file_type|upper }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- CANTIDAD -->
+
+                <div class="col-xl-2 col-md-6">
+
+                    <label class="form-label">
+                        Mostrar
+                    </label>
+
+                    <select
+                        name="per_page"
+                        class="form-select"
+                    >
+
+                        {% for amount in [10, 20, 50, 100] %}
+
+                        <option
+                            value="{{ amount }}"
+                            {% if pagination.per_page == amount %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ amount }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- FECHA DESDE -->
+
+                <div class="col-xl-3 col-md-6">
+
+                    <label class="form-label">
+                        Desde
+                    </label>
+
+                    <input
+                        type="date"
+                        name="date_from"
+                        class="form-control"
+                        value="{{ filters.date_from }}"
+                    >
+
+                </div>
+
+
+                <!-- FECHA HASTA -->
+
+                <div class="col-xl-3 col-md-6">
+
+                    <label class="form-label">
+                        Hasta
+                    </label>
+
+                    <input
+                        type="date"
+                        name="date_to"
+                        class="form-control"
+                        value="{{ filters.date_to }}"
+                    >
+
+                </div>
+
+
+                <!-- BOTONES -->
+
+                <div class="col-xl-6 col-md-12">
+
+                    <label class="form-label d-block">
+                        &nbsp;
+                    </label>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        <i class="bi bi-search me-1"></i>
+                        Buscar
+                    </button>
+
+
+                    <a
+                        href="{{ url_for('documents.index') }}"
+                        class="btn btn-light ms-1"
+                    >
+                        <i class="bi bi-x-circle me-1"></i>
+                        Limpiar filtros
+                    </a>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================
+     RESULTADOS
+========================================================= -->
+
+<div class="card mb-4" id="folder-sync-card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+            <div>
+                <span class="dashboard-kicker">AUTOMÁTICO</span>
+                <h3 class="panel-title mb-1"><i class="bi bi-stars me-2"></i>InnovaFile organiza tus documentos</h3>
+                <div class="text-muted" id="sync-status">Conecta una carpeta una sola vez. Gemini analizará los documentos compatibles y los colocará en la categoría que corresponda.</div>
+                <div class="small text-muted mt-2" id="sync-folder-name"></div>
+            </div>
+            {% if auth_user and has_permission('documents.sync') %}
+            <div>
+                <div class="d-flex gap-2 flex-wrap justify-content-end">
+                    <button id="connect-folder" class="btn btn-primary btn-lg">
+                        <i class="bi bi-folder2-open me-1"></i>Conectar carpeta
+                    </button>
+                    <button id="generate-agent-token" class="btn btn-outline-primary btn-lg" type="button">
+                        <i class="bi bi-pc-display me-1"></i>Sincronización automática
+                    </button>
+                </div>
+                <input id="folder-fallback" type="file" webkitdirectory directory multiple hidden>
+            </div>
+            {% endif %}
+        </div>
+        <div class="progress mt-3 d-none" id="sync-progress-wrap" style="height:8px">
+            <div id="sync-progress" class="progress-bar" style="width:0%"></div>
+        </div>
+        <div class="small text-muted mt-2 d-none" id="sync-detail"></div>
+    </div>
+</div>
+<div class="card">
+
+    <div class="panel-head">
+
+        <div>
+
+            <h3 class="panel-title">
+                Documentos encontrados
+            </h3>
+
+            <div class="panel-subtitle">
+
+                {{ pagination.total }}
+
+                {% if pagination.total == 1 %}
+                    documento
+                {% else %}
+                    documentos
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        {% if auth_user and has_permission('documents.delete') %}
+
+        <a
+            href="{{ url_for('documents.trash') }}"
+            class="btn btn-light btn-sm"
+        >
+            <i class="bi bi-trash me-1"></i>
+            Papelera
+        </a>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Documento
+                        </th>
+
+                        <th>
+                            Categoría
+                        </th>
+
+                        <th>
+                            Tipo
+                        </th>
+
+                        <th>
+                            Responsable
+                        </th>
+
+                        <th>
+                            Fecha
+                        </th>
+
+                        <th>
+                            Acciones
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for d in documents %}
+
+                    <tr>
+
+                        <!-- DOCUMENTO -->
+
+                        <td>
+
+                            <div class="d-flex align-items-center gap-3">
+
+                                <div
+                                    class="category-icon"
+                                    style="width:40px;height:40px;border-radius:11px"
+                                >
+                                    <i class="bi bi-file-earmark-text"></i>
+                                </div>
+
+
+                                <div>
+
+                                    <div class="doc-title">
+                                        {{ d.title }}
+                                    </div>
+
+                                    <div class="doc-meta">
+                                        {{ d.file_name }}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- CATEGORÍA -->
+
+                        <td>
+
+                            <span class="soft-badge">
+                                {{ d.category.name }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- TIPO -->
+
+                        <td>
+
+                            <span class="type-badge">
+                                {{ d.file_type|upper }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- RESPONSABLE -->
+
+                        <td>
+                            {{ d.user.name }}
+                        </td>
+
+
+                        <!-- FECHA -->
+
+                        <td>
+
+                            {% if d.created_at %}
+
+                                {{ d.created_at.strftime('%d/%m/%Y') }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACCIONES -->
+
+                        <td>
+
+                            <div class="table-actions">
+
+                                <a
+                                    class="btn btn-sm btn-outline-primary icon-btn"
+                                    title="Ver"
+                                    href="{{ url_for('documents.show', document_id=d._id) }}"
+                                >
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+
+                                <a
+                                    class="btn btn-sm btn-light icon-btn"
+                                    title="Descargar"
+                                    href="{{ url_for('documents.download', document_id=d._id) }}"
+                                >
+                                    <i class="bi bi-download"></i>
+                                </a>
+
+
+                                {% if auth_user and has_permission('documents.delete') %}
+
+                                <form
+                                    class="d-inline"
+                                    method="POST"
+                                    action="{{ url_for('documents.delete', document_id=d._id) }}"
+                                    onsubmit="return confirm('¿Enviar este documento a la papelera?');"
+                                >
+
+                                    <button
+                                        class="btn btn-sm btn-outline-danger icon-btn"
+                                        title="Enviar a papelera"
+                                        type="submit"
+                                    >
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+
+                                </form>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% else %}
+
+                    <tr>
+
+                        <td colspan="6">
+
+                            <div class="empty-state">
+
+                                <div class="empty-icon">
+                                    <i class="bi bi-search"></i>
+                                </div>
+
+
+                                <h5 class="text-dark">
+                                    No se encontraron documentos
+                                </h5>
+
+
+                                <p>
+                                    Prueba modificando o eliminando alguno de los filtros.
+                                </p>
+
+
+                                <a
+                                    class="btn btn-light btn-sm"
+                                    href="{{ url_for('documents.index') }}"
+                                >
+                                    Limpiar filtros
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         PAGINACIÓN
+    ===================================================== -->
+
+    {% if pagination.total_pages > 1 %}
+
+    <div class="card-footer bg-white">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+            <div class="small text-muted">
+
+                Página
+                {{ pagination.page }}
+                de
+                {{ pagination.total_pages }}
+
+            </div>
+
+
+            <nav>
+
+                <ul class="pagination pagination-sm mb-0">
+
+
+                    <!-- ANTERIOR -->
+
+                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+
+                        <a
+                            class="page-link"
+                            href="{{
+                                url_for(
+                                    'documents.index',
+                                    page=pagination.prev_page,
+                                    per_page=pagination.per_page,
+                                    search=filters.search,
+                                    category_id=filters.category_id,
+                                    user_id=filters.user_id,
+                                    file_type=filters.file_type,
+                                    date_from=filters.date_from,
+                                    date_to=filters.date_to
+                                )
+                            }}"
+                        >
+                            Anterior
+                        </a>
+
+                    </li>
+
+
+                    <!-- PÁGINA ACTUAL -->
+
+                    <li class="page-item active">
+
+                        <span class="page-link">
+                            {{ pagination.page }}
+                        </span>
+
+                    </li>
+
+
+                    <!-- SIGUIENTE -->
+
+                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+
+                        <a
+                            class="page-link"
+                            href="{{
+                                url_for(
+                                    'documents.index',
+                                    page=pagination.next_page,
+                                    per_page=pagination.per_page,
+                                    search=filters.search,
+                                    category_id=filters.category_id,
+                                    user_id=filters.user_id,
+                                    file_type=filters.file_type,
+                                    date_from=filters.date_from,
+                                    date_to=filters.date_to
+                                )
+                            }}"
+                        >
+                            Siguiente
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </nav>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<script>
+(function () {
+    const connectButton = document.getElementById('connect-folder');
+    const fallbackInput = document.getElementById('folder-fallback');
+    const status = document.getElementById('sync-status');
+    const folderName = document.getElementById('sync-folder-name');
+    const progressWrap = document.getElementById('sync-progress-wrap');
+    const progress = document.getElementById('sync-progress');
+    const detail = document.getElementById('sync-detail');
+    const dbName = 'innovafile-folder-access';
+    const storeName = 'handles';
+    const handleKey = 'documents-folder';
+
+    if (!connectButton) return;
+
+    function setStatus(message, isError) {
+        status.textContent = message;
+        status.classList.toggle('text-danger', !!isError);
+        status.classList.toggle('text-muted', !isError);
+    }
+
+    function setProgress(done, total) {
+        const percent = total ? Math.round((done / total) * 100) : 0;
+        progressWrap.classList.remove('d-none');
+        progress.style.width = percent + '%';
+        detail.classList.remove('d-none');
+        detail.textContent = `${done} de ${total} documentos procesados (${percent}%)`;
+    }
+
+    function openDb() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName, 1);
+            request.onupgradeneeded = () => request.result.createObjectStore(storeName);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async function saveHandle(handle) {
+        const db = await openDb();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(storeName, 'readwrite');
+            tx.objectStore(storeName).put(handle, handleKey);
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error);
+        });
+    }
+
+    async function getHandle() {
+        const db = await openDb();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(storeName, 'readonly');
+            const request = tx.objectStore(storeName).get(handleKey);
+            request.onsuccess = () => resolve(request.result || null);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async function permissionGranted(handle) {
+        try {
+            return await handle.queryPermission({mode: 'read'}) === 'granted';
+        } catch (_) {
+            return false;
+        }
+    }
+
+    async function requestPermission(handle) {
+        try {
+            if (await permissionGranted(handle)) return true;
+            return await handle.requestPermission({mode: 'read'}) === 'granted';
+        } catch (_) {
+            return false;
+        }
+    }
+
+    async function collectFiles(handle, prefix = '', output = []) {
+        for await (const [name, entry] of handle.entries()) {
+            const relative = prefix ? `${prefix}/${name}` : name;
+            if (entry.kind === 'file') {
+                const lower = name.toLowerCase();
+                const supported = ['.pdf','.doc','.docx','.xls','.xlsx','.ppt','.pptx','.txt','.csv','.jpg','.jpeg','.png']
+                    .some(ext => lower.endsWith(ext));
+                if (supported) output.push({entry, relative});
+            } else if (entry.kind === 'directory') {
+                await collectFiles(entry, relative, output);
+            }
+            if (output.length >= 500) break;
+        }
+        return output.slice(0, 500);
+    }
+
+    async function sendFile(file, relative) {
+        const form = new FormData();
+        form.append('file', file, file.name);
+        form.append('source_path', relative);
+        const response = await fetch('{{ url_for("documents.auto_import") }}', {
+            method: 'POST',
+            body: form,
+            credentials: 'same-origin',
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        });
+        let data = {};
+        try { data = await response.json(); } catch (_) {}
+        if (!response.ok || !data.ok) {
+            throw new Error(data.message || `Error HTTP ${response.status}`);
+        }
+        return data;
+    }
+
+    async function syncFileList(items, label) {
+        if (!items.length) {
+            setStatus('No encontré documentos compatibles en la carpeta seleccionada.');
+            progressWrap.classList.add('d-none');
+            detail.classList.add('d-none');
+            return;
+        }
+        setStatus(`Analizando ${items.length} documento${items.length === 1 ? '' : 's'} con Gemini...`);
+        let done = 0;
+        let imported = 0;
+        let skipped = 0;
+        let errors = 0;
+        for (const item of items) {
+            try {
+                const file = item.file || await item.entry.getFile();
+                if (file.size > 50 * 1024 * 1024) {
+                    errors++;
+                } else {
+                    const result = await sendFile(file, item.relative);
+                    if (result.status === 'imported' || result.status === 'updated') imported++;
+                    if (result.status === 'skipped') skipped++;
+                }
+            } catch (error) {
+                errors++;
+                console.warn('InnovaFile: documento no procesado', item.relative, error);
+            }
+            done++;
+            setProgress(done, items.length);
+        }
+        folderName.textContent = label ? `Carpeta conectada: ${label}` : '';
+        if (errors) {
+            setStatus(`Proceso terminado. ${imported} organizados, ${skipped} ya estaban sincronizados y ${errors} requieren revisión.`, true);
+        } else {
+            setStatus(`Listo. ${imported} documentos organizados y ${skipped} ya estaban sincronizados.`);
+        }
+        setTimeout(() => window.location.reload(), 1000);
+    }
+
+    async function syncDirectory(handle) {
+        const items = await collectFiles(handle);
+        folderName.textContent = `Carpeta conectada: ${handle.name}`;
+        await syncFileList(items, handle.name);
+    }
+
+    async function connectDirectory() {
+        if (!window.showDirectoryPicker) {
+            fallbackInput.click();
+            return;
+        }
+        try {
+            const handle = await window.showDirectoryPicker({mode: 'read'});
+            const granted = await requestPermission(handle);
+            if (!granted) {
+                setStatus('No se concedió permiso de lectura para la carpeta.', true);
+                return;
+            }
+            await saveHandle(handle);
+            await syncDirectory(handle);
+        } catch (error) {
+            if (error && error.name === 'AbortError') return;
+            console.error(error);
+            setStatus('No fue posible conectar la carpeta.', true);
+        }
+    }
+
+    const agentButton = document.getElementById('generate-agent-token');
+    if (agentButton) {
+        agentButton.addEventListener('click', async () => {
+            const confirmed = window.confirm(
+                'Esto creará un token para el agente de escritorio. El token reemplazará cualquier token anterior de esta cuenta. ¿Continuar?'
+            );
+            if (!confirmed) return;
+            agentButton.disabled = true;
+            try {
+                const response = await fetch('{{ url_for("documents.create_agent_token") }}', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {'X-Requested-With': 'XMLHttpRequest'}
+                });
+                const data = await response.json();
+                if (!response.ok || !data.ok) throw new Error(data.message || 'No fue posible generar el token.');
+                window.prompt(
+                    'Copia este token y pégalo cuando configures CONFIGURAR_AGENTE.bat. Por seguridad solo se mostrará ahora:',
+                    data.token
+                );
+                setStatus('Token generado. Configura ahora el agente de escritorio en la computadora del cliente.');
+            } catch (error) {
+                setStatus(error.message || 'No fue posible generar el token.', true);
+            } finally {
+                agentButton.disabled = false;
+            }
+        });
+    }
+
+    connectButton.addEventListener('click', connectDirectory);
+
+    fallbackInput.addEventListener('change', async () => {
+        const files = Array.from(fallbackInput.files || []);
+        const items = files.map(file => ({
+            file,
+            relative: file.webkitRelativePath || file.name
+        }));
+        await syncFileList(items, files[0] && files[0].webkitRelativePath ? files[0].webkitRelativePath.split('/')[0] : 'Carpeta seleccionada');
+        fallbackInput.value = '';
+    });
+
+    (async function restoreSavedFolder() {
+        try {
+            const handle = await getHandle();
+            if (!handle) return;
+            if (await permissionGranted(handle)) {
+                setStatus('Carpeta autorizada encontrada. Revisando documentos nuevos...');
+                await syncDirectory(handle);
+            } else {
+                setStatus('La carpeta ya está registrada. Pulsa "Conectar carpeta" para volver a autorizarla si el navegador lo solicita.');
+            }
+        } catch (error) {
+            console.warn('No se pudo restaurar la carpeta autorizada.', error);
+        }
+    })();
+})();
+</script>
+
+{% endblock %}

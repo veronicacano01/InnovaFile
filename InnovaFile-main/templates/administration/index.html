@@ -1,0 +1,382 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}
+Administración | InnovaFile
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-intro">
+
+    <div>
+
+        <span class="dashboard-kicker">
+            ADMINISTRACIÓN
+        </span>
+
+        <h2 class="dashboard-title">
+            Estado del sistema
+        </h2>
+
+        <p class="dashboard-subtitle">
+            Información técnica, almacenamiento y herramientas de respaldo.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="row g-3 dashboard-stats mb-4">
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="dashboard-stat">
+
+            <div class="stat-content">
+
+                <span class="stat-label">
+                    MongoDB
+                </span>
+
+                <strong class="stat-number">
+
+                    {% if system_info.database_online %}
+                        Activo
+                    {% else %}
+                        Error
+                    {% endif %}
+
+                </strong>
+
+                <span class="stat-description">
+                    {{ system_info.database_name }}
+                </span>
+
+            </div>
+
+            <div class="stat-icon">
+
+                <i class="bi bi-database"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="dashboard-stat">
+
+            <div class="stat-content">
+
+                <span class="stat-label">
+                    Usuarios
+                </span>
+
+                <strong class="stat-number">
+                    {{ system_info.users }}
+                </strong>
+
+                <span class="stat-description">
+                    Cuentas registradas
+                </span>
+
+            </div>
+
+            <div class="stat-icon">
+
+                <i class="bi bi-people"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="dashboard-stat">
+
+            <div class="stat-content">
+
+                <span class="stat-label">
+                    Documentos
+                </span>
+
+                <strong class="stat-number">
+                    {{ system_info.documents }}
+                </strong>
+
+                <span class="stat-description">
+                    Archivos registrados
+                </span>
+
+            </div>
+
+            <div class="stat-icon">
+
+                <i class="bi bi-file-earmark-text"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="dashboard-stat">
+
+            <div class="stat-content">
+
+                <span class="stat-label">
+                    Almacenamiento
+                </span>
+
+                <strong class="stat-number">
+                    {{ system_info.uploads_size.formatted }}
+                </strong>
+
+                <span class="stat-description">
+                    Espacio utilizado
+                </span>
+
+            </div>
+
+            <div class="stat-icon">
+
+                <i class="bi bi-hdd"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="row g-4">
+
+    <div class="col-xl-6">
+
+        <div class="card h-100">
+
+            <div class="panel-head">
+
+                <div>
+
+                    <h3 class="panel-title">
+                        Información general
+                    </h3>
+
+                    <div class="panel-subtitle">
+                        Resumen de los datos del sistema
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between border-bottom py-3">
+
+                    <span>
+                        Categorías
+                    </span>
+
+                    <strong>
+                        {{ system_info.categories }}
+                    </strong>
+
+                </div>
+
+
+                <div class="d-flex justify-content-between border-bottom py-3">
+
+                    <span>
+                        Registros de actividad
+                    </span>
+
+                    <strong>
+                        {{ system_info.activities }}
+                    </strong>
+
+                </div>
+
+
+                <div class="d-flex justify-content-between border-bottom py-3">
+
+                    <span>
+                        Base de datos
+                    </span>
+
+                    <strong>
+                        {{ system_info.database_name }}
+                    </strong>
+
+                </div>
+
+
+                <div class="d-flex justify-content-between py-3">
+
+                    <span>
+                        Estado de MongoDB
+                    </span>
+
+                    {% if system_info.database_online %}
+
+                        <span class="badge bg-success">
+                            Conectado
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-danger">
+                            Sin conexión
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-xl-6">
+
+        <div class="card h-100">
+
+            <div class="panel-head">
+
+                <div>
+
+                    <h3 class="panel-title">
+                        Respaldo del sistema
+                    </h3>
+
+                    <div class="panel-subtitle">
+                        Protección y recuperación de información
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+                {% if system_info.last_backup %}
+
+                    <div class="mb-4">
+
+                        <span class="text-muted small">
+                            Último respaldo
+                        </span>
+
+                        <div class="fw-bold mt-1">
+                            {{ system_info.last_backup.name }}
+                        </div>
+
+                        <div class="doc-meta">
+                            {{ system_info.last_backup.date }}
+                            ·
+                            {{ system_info.last_backup.size }}
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="mb-4 text-muted">
+                        Todavía no se ha generado ningún respaldo.
+                    </div>
+
+                {% endif %}
+
+
+                <form
+                    action="{{ url_for('backups.create') }}"
+                    method="POST"
+                    class="mb-4"
+                >
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+
+                        <i class="bi bi-download me-1"></i>
+
+                        Crear respaldo
+
+                    </button>
+
+                </form>
+
+
+                <hr>
+
+
+                <h5 class="mt-4">
+                    Restaurar respaldo
+                </h5>
+
+                <p class="small text-muted">
+                    Esta operación reemplazará los datos actuales del sistema.
+                </p>
+
+
+                <form
+                    action="{{ url_for('backups.restore') }}"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    onsubmit="return confirm('¿Seguro que deseas restaurar este respaldo? Los datos actuales serán reemplazados.');"
+                >
+
+                    <div class="mb-3">
+
+                        <input
+                            type="file"
+                            name="backup_file"
+                            class="form-control"
+                            accept=".zip"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
+                    >
+
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>
+
+                        Restaurar respaldo
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
