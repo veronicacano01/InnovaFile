@@ -76,3 +76,35 @@ def ask_gemini(question, documents):
     answer=(getattr(response,"text",None) or "").strip()
     if not answer: raise RuntimeError("Gemini no devolvió una respuesta de texto.")
     return answer[:8000]
+
+def _classify_local(filename, extracted_text, categories):
+    """Clasificador local por palabras clave cuando Gemini no está disponible."""
+    text = f"{filename} {extracted_text}".lower()
+    keywords = {
+        "Contratos": ["contrato", "acuerdo", "convenio", "cláusula", "arrendamiento"],
+        "Facturas": ["factura", "invoice", "recibo", "pago", "total a pagar", "iva"],
+        "Reportes": ["reporte", "informe", "report", "análisis", "resultado"],
+        "Manuales": ["manual", "guía", "instrucciones", "procedimiento", "tutorial"],
+        "Currículums": ["currículum", "cv", "curriculum", "experiencia laboral", "formación académica"],
+    }
+    best = "Otros"
+    best_score = 0
+    matched = []
+    for cat, words in keywords.items():
+        if cat not in categories:
+            continue
+        score = sum(1 for w in words if w in text)
+        if score > best_score:
+            best_score = score
+            best = cat
+            matched = [w for w in words if w in text]
+    confidence = min(95, 40 + best_score * 15) if best_score else 0
+    return {
+        "categoria": best,
+        "confianza": confidence,
+        "motivo": f"Clasificación local por palabras clave: {', '.join(matched) or 'sin coincidencias'}.",
+        "palabras": matched[:8],
+        "resumen": "",
+        "proveedor": "Reglas locales",
+        "requiere_revision": confidence < 75,
+    }

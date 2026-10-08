@@ -2,6 +2,20 @@
 {% block content %}
 <div class="container"><div class="row justify-content-center align-items-center vh-100"><div class="col-md-6 col-lg-5"><div class="card shadow-lg border-0 rounded-4"><div class="card-body p-5"><div class="text-center mb-4"><h2 class="fw-bold"><span>Innova</span><span style="color:#7e22ce">File</span></h2><p class="text-muted">Registro de usuario</p></div>
 {% with messages=get_flashed_messages(with_categories=true) %}{% for cat,msg in messages %}<div class="alert alert-{{cat}}">{{msg}}</div>{% endfor %}{% endwith %}
-<form method="POST"><div class="mb-3"><label>Nombre</label><input class="form-control" name="name" required></div><div class="mb-3"><label>Apellidos</label><input class="form-control" name="last_name" required></div><div class="mb-3"><label>Correo</label><input class="form-control" type="email" name="email" required></div><div class="mb-3"><label>Contraseña</label><input class="form-control" type="password" name="password" minlength="6" required></div><button class="btn btn-primary w-100">Registrarme</button></form><div class="text-center mt-3"><a href="{{url_for('auth.login')}}">Volver al login</a></div>
+<form method="POST">
+  <div class="mb-3"><label>Nombre</label><input class="form-control" name="name" required></div>
+  <div class="mb-3"><label>Apellidos</label><input class="form-control" name="last_name" required></div>
+  <div class="mb-3"><label>Correo</label><input class="form-control" type="email" name="email" required></div>
+  <div class="mb-3"><label>Contraseña</label><input class="form-control" type="password" name="password" minlength="8" required></div>
+  <div class="mb-3">
+    <label>Rol</label>
+    <select class="form-select" name="role_id" required>
+      {% for role in roles %}
+        <option value="{{ role._id }}">{{ role.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button class="btn btn-primary w-100">Registrarme</button>
+</form><div class="text-center mt-3"><a href="{{url_for('auth.login')}}">Volver al login</a></div>
 </div></div></div></div></div>
 {% endblock %}

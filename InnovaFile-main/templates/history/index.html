@@ -1,1 +1,35 @@
-{% extends 'layouts/base.html' %}{% block title %}Actividad | InnovaFile{% endblock %}{% block content %}<div class="page-head"><div><span class="dashboard-kicker">AUDITORÍA</span><h2 class="page-title">Historial de actividad</h2><p class="page-subtitle">Trazabilidad de accesos y operaciones realizadas dentro de la plataforma.</p></div></div><div class="card"><div class="card-body p-0"><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Acción</th><th>Descripción</th><th>Dirección IP</th></tr></thead><tbody>{% for x in logs %}<tr><td><span class="text-nowrap">{{x.created_at.strftime('%d/%m/%Y %H:%M') if x.created_at else ''}}</span></td><td><strong>{{x.user.name}}</strong></td><td><span class="soft-badge">{{x.action}}</span></td><td class="text-muted">{{x.description}}</td><td><code class="text-secondary">{{x.ip_address}}</code></td></tr>{% else %}<tr><td colspan="5"><div class="empty-state">Sin actividad registrada.</div></td></tr>{% endfor %}</tbody></table></div></div></div>{% endblock %}
+{% extends 'layouts/base.html' %}{% block title %}Actividad | InnovaFile{% endblock %}{% block content %}<div
+    class="page-head">
+    <div><span class="dashboard-kicker">AUDITORÍA</span>
+        <h2 class="page-title">Historial de actividad</h2>
+        <p class="page-subtitle">Trazabilidad de accesos y operaciones realizadas dentro de la plataforma.</p>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Fecha y hora</th>
+                        <th>Usuario</th>
+                        <th>Acción</th>
+                        <th>Descripción</th>
+                        <th>Dirección IP</th>
+                    </tr>
+                </thead>
+                <tbody>{% for x in logs %}<tr>
+                        <td><span class="text-nowrap">{{ x.created_at | fecha_hora_mx }}</span></td>
+                        <td><strong>{{x.user.name}}</strong></td>
+                        <td><span class="soft-badge">{{x.action}}</span></td>
+                        <td class="text-muted">{{x.description}}</td>
+                        <td><code class="text-secondary">{{x.ip_address}}</code></td>
+                    </tr>{% else %}<tr>
+                        <td colspan="5">
+                            <div class="empty-state">Sin actividad registrada.</div>
+                        </td>
+                    </tr>{% endfor %}</tbody>
+            </table>
+        </div>
+    </div>
+</div>{% endblock %}

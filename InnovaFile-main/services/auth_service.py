@@ -437,121 +437,84 @@ def register_user(
     name,
     last_name,
     email,
-    password
+    password,
+    role_id=None,
 ):
+    name = (name or "").strip()
+    last_name = (last_name or "").strip()
+    email = (email or "").strip().lower()
 
-    name = (
-        name or ""
-    ).strip()
-
-    last_name = (
-        last_name or ""
-    ).strip()
-
-    email = (
-        email or ""
-    ).strip().lower()
-
-    if not all([
-        name,
-        last_name,
-        email,
-        password
-    ]):
-
-        raise InvalidRegistrationError(
-            "Completa todos los campos."
-        )
+    if not all([name, last_name, email, password]):
+        raise InvalidRegistrationError("Completa todos los campos.")
 
     if len(name) > 100:
-
-        raise InvalidRegistrationError(
-            "El nombre es demasiado largo."
-        )
+        raise InvalidRegistrationError("El nombre es demasiado largo.")
 
     if len(last_name) > 100:
+        raise InvalidRegistrationError("El apellido es demasiado largo.")
 
-        raise InvalidRegistrationError(
-            "El apellido es demasiado largo."
-        )
+    if "@" not in email or "." not in email:
+        raise InvalidRegistrationError("Ingresa un correo válido.")
 
-    if (
-        "@" not in email
-        or "." not in email
-    ):
+    validate_password(password)
 
-        raise InvalidRegistrationError(
-            "Ingresa un correo válido."
-        )
+    # --------------------------------------------------------
+    # VALIDAR ROL
+    # --------------------------------------------------------
+    # Si se especifica un rol, debe existir y NO ser Administrador.
+    # Si no se especifica, se usa "Empleado" o el primer rol no-admin.
 
-    validate_password(
-        password
-    )
+    role = None
 
-    role = (
-        auth_repository
-        .get_role_by_name(
-            "Empleado"
-        )
-    )
+    if role_id:
+        try:
+            from bson import ObjectId
+            role = auth_repository.get_role_by_id(ObjectId(role_id))
+        except Exception:
+            role = None
+
+        if not role:
+            raise InvalidRegistrationError("El rol seleccionado no existe.")
+
+    else:
+        role = auth_repository.get_role_by_name("Empleado")
+        if not role:
+            all_roles = auth_repository.get_all_roles()
+            role = next(
+                (r for r in all_roles if r.get("name") != "Administrador"),
+                None,
+            )
 
     if not role:
-
         raise InvalidRegistrationError(
-            (
-                "No existe el rol Empleado. "
-                "Ejecuta seed.py primero."
-            )
+            "No hay roles disponibles. Contacta al administrador."
         )
 
-    now = datetime.now(
-        timezone.utc
-    )
+    # Bloqueo explícito de Administrador
+    if role.get("name") == "Administrador":
+        raise InvalidRegistrationError(
+            "No puedes registrarte con el rol Administrador."
+        )
+
+    now = datetime.now(timezone.utc)
 
     user_data = {
-
         "name": name,
-
         "last_name": last_name,
-
         "email": email,
-
-        "password": hash_password(
-            password
-        ),
-
-        "role_id": role[
-            "_id"
-        ],
-
+        "password": hash_password(password),
+        "role_id": role["_id"],
         "failed_login_attempts": 0,
-
         "locked_until": None,
-
         "last_login_at": None,
-
         "created_at": now,
-
-        "updated_at": now
+        "updated_at": now,
     }
 
     try:
-
-        result = (
-            auth_repository
-            .create_user(
-                user_data
-            )
-        )
-
+        result = auth_repository.create_user(user_data)
     except DuplicateKeyError:
+        raise DuplicateUserError("Ese correo ya está registrado.")
 
-        raise DuplicateUserError(
-            "Ese correo ya está registrado."
-        )
-
-    user_data[
-        "_id"
-    ] = result.inserted_id
-
+    user_data["_id"] = result.inserted_id
     return user_data

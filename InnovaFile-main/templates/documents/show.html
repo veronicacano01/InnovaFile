@@ -906,11 +906,7 @@
 
                                         <i class="bi bi-clock me-1"></i>
 
-                                        {{
-                                            document.updated_at.strftime(
-                                                '%d/%m/%Y %H:%M'
-                                            )
-                                        }}
+                                        {{ document.updated_at | fecha_hora_mx }}
 
                                     </div>
 
@@ -920,11 +916,7 @@
 
                                         <i class="bi bi-clock me-1"></i>
 
-                                        {{
-                                            document.created_at.strftime(
-                                                '%d/%m/%Y %H:%M'
-                                            )
-                                        }}
+                                        {{ document.created_at | fecha_hora_mx }}
 
                                     </div>
 
@@ -1020,11 +1012,7 @@
 
                                             <i class="bi bi-clock me-1"></i>
 
-                                            {{
-                                                version.created_at.strftime(
-                                                    '%d/%m/%Y %H:%M'
-                                                )
-                                            }}
+                                            {{ version.created_at | fecha_hora_mx }}
 
                                         </div>
 

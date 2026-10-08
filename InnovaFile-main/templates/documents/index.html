@@ -481,15 +481,7 @@ Documentos | InnovaFile
 
                         <td>
 
-                            {% if d.created_at %}
-
-                                {{ d.created_at.strftime('%d/%m/%Y') }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
+                            {{ d.created_at | fecha_mx }}
 
                         </td>
 
@@ -909,19 +901,21 @@ Documentos | InnovaFile
     });
 
     (async function restoreSavedFolder() {
-        try {
-            const handle = await getHandle();
-            if (!handle) return;
-            if (await permissionGranted(handle)) {
-                setStatus('Carpeta autorizada encontrada. Revisando documentos nuevos...');
-                await syncDirectory(handle);
-            } else {
-                setStatus('La carpeta ya está registrada. Pulsa "Conectar carpeta" para volver a autorizarla si el navegador lo solicita.');
-            }
-        } catch (error) {
-            console.warn('No se pudo restaurar la carpeta autorizada.', error);
+    try {
+        const handle = await getHandle();
+        if (!handle) return;
+        if (await permissionGranted(handle)) {
+            // Solo mostramos el estado. La sincronización se hace
+            // cuando el usuario pulse "Conectar carpeta".
+            folderName.textContent = `Carpeta conectada: ${handle.name}`;
+            setStatus('Carpeta autorizada. Pulsa "Conectar carpeta" para buscar documentos nuevos.');
+        } else {
+            setStatus('La carpeta ya está registrada. Pulsa "Conectar carpeta" para volver a autorizarla si el navegador lo solicita.');
         }
-    })();
+    } catch (error) {
+        console.warn('No se pudo restaurar la carpeta autorizada.', error);
+    }
+})();
 })();
 </script>
 

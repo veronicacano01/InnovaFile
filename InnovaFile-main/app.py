@@ -251,6 +251,23 @@ def create_app():
     )
 
     # ========================================================
+    # FILTROS DE FECHA (UTC → México)
+    # ========================================================
+
+    from helpers.date_utils import (
+        format_date,
+        format_datetime,
+    )
+
+    app.jinja_env.filters[
+        "fecha_mx"
+    ] = format_date
+
+    app.jinja_env.filters[
+        "fecha_hora_mx"
+    ] = format_datetime
+
+    # ========================================================
     # CONTEXT PROCESSOR
     #
     # Permite utilizar auth_user en cualquier template.

@@ -223,104 +223,64 @@ def login():
 
 @auth_bp.route(
     "/register",
-    methods=[
-        "GET",
-        "POST"
-    ]
+    methods=["GET", "POST"]
 )
 def register():
 
     if request.method == "POST":
 
-        name = request.form.get(
-            "name",
-            ""
-        )
-
-        last_name = request.form.get(
-            "last_name",
-            ""
-        )
-
-        email = request.form.get(
-            "email",
-            ""
-        )
-
-        password = request.form.get(
-            "password",
-            ""
-        )
+        name = request.form.get("name", "")
+        last_name = request.form.get("last_name", "")
+        email = request.form.get("email", "")
+        password = request.form.get("password", "")
+        role_id = request.form.get("role_id", "").strip()
 
         try:
-
             user = register_user(
                 name=name,
                 last_name=last_name,
                 email=email,
-                password=password
+                password=password,
+                role_id=role_id or None,
             )
 
             log_activity(
                 "Registro de usuario",
-                (
-                    "Se registró una nueva "
-                    "cuenta de usuario."
-                ),
+                "Se registró una nueva cuenta de usuario.",
                 entity_type="user",
-                entity_id=str(
-                    user[
-                        "_id"
-                    ]
-                )
+                entity_id=str(user["_id"]),
             )
 
             flash(
-                (
-                    "Usuario registrado correctamente. "
-                    "Ya puedes iniciar sesión."
-                ),
-                "success"
+                "Usuario registrado correctamente. Ya puedes iniciar sesión.",
+                "success",
             )
 
-            return redirect(
-                url_for(
-                    "auth.login"
-                )
-            )
+            return redirect(url_for("auth.login"))
 
         except DuplicateUserError as error:
-
-            flash(
-                str(error),
-                "danger"
-            )
+            flash(str(error), "danger")
 
         except InvalidRegistrationError as error:
-
-            flash(
-                str(error),
-                "danger"
-            )
+            flash(str(error), "danger")
 
         except Exception as error:
+            print(f"Error inesperado al registrar usuario: {error}")
+            flash("No fue posible registrar el usuario.", "danger")
 
-            print(
-                f"Error inesperado al registrar usuario: {error}"
-            )
+    # --------------------------------------------------------
+    # CARGAR ROLES (SIN ADMINISTRADOR)
+    # --------------------------------------------------------
 
-            flash(
-                (
-                    "No fue posible registrar "
-                    "el usuario."
-                ),
-                "danger"
-            )
+    roles = []
+    try:
+        from repositories import auth_repository
+        all_roles = auth_repository.get_all_roles()
+        roles = [r for r in all_roles if r.get("name") != "Administrador"]
+    except Exception as error:
+        print(f"Error al cargar roles para registro: {error}")
 
-    return render_template(
-        "register.html"
-    )
-
+    return render_template("register.html", roles=roles)
 
 # ============================================================
 # CERRAR SESIÓN

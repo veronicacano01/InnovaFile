@@ -80,3 +80,14 @@ def get_role_by_name(name):
     return db.roles.find_one({
         "name": name
     })
+
+def get_role_by_id(role_id):
+    if not role_id:
+        return None
+    if isinstance(role_id, str):
+        role_id = ObjectId(role_id)
+    return db.roles.find_one({"_id": role_id})
+
+
+def get_all_roles():
+    return list(db.roles.find().sort("name", 1))

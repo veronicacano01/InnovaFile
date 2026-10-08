@@ -106,8 +106,7 @@ Papelera | InnovaFile
 
                             {% if document.deleted_at %}
 
-                                {{ document.deleted_at.strftime('%d/%m/%Y %H:%M') }}
-
+{{ document.deleted_at | fecha_hora_mx }}
                             {% else %}
 
                                 -

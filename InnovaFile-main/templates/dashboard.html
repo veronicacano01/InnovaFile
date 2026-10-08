@@ -1579,8 +1579,7 @@ Dashboard | InnovaFile
 
                                     ·
 
-                                    {{ activity.created_at.strftime('%d/%m/%Y %H:%M') }}
-
+{{ activity.created_at | fecha_hora_mx }}
                                 {% endif %}
 
                             </div>
