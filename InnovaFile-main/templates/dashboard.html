@@ -976,7 +976,7 @@ Dashboard | InnovaFile
                         </span>
 
                         <strong class="metric-number">
-                            {{ documentos }}
+                            {{ documentos|default(0) }}
                         </strong>
 
                         <span class="metric-description">
@@ -1014,11 +1014,11 @@ Dashboard | InnovaFile
                         </span>
 
                         <strong class="metric-number">
-                            +{{ documentos_mes }}
+                            +{{ documentos_mes|default(0) }}
                         </strong>
 
                         <span class="metric-description">
-                            {{ porcentaje_mes }}% del repositorio total
+                            {{ porcentaje_mes|default(0) }}% del repositorio total
                         </span>
 
                     </div>
@@ -1033,6 +1033,7 @@ Dashboard | InnovaFile
                 </div>
 
 
+                <!-- FIX: evitar [x, 100]|min por si porcentaje_mes viene como string -->
                 <div class="metric-progress">
 
                     <div
@@ -1062,7 +1063,7 @@ Dashboard | InnovaFile
                         </span>
 
                         <strong class="metric-number">
-                            {{ usuarios }}
+                            {{ usuarios|default(0) }}
                         </strong>
 
                         <span class="metric-description">
@@ -1103,7 +1104,7 @@ Dashboard | InnovaFile
                             class="metric-number"
                             style="font-size:1.55rem"
                         >
-                            {{ almacenamiento.formatted }}
+                            {{ almacenamiento.formatted if almacenamiento and almacenamiento.formatted else '0 B' }}
                         </strong>
 
                         <span class="metric-description">
@@ -1212,7 +1213,7 @@ Dashboard | InnovaFile
 
                 <div class="analytics-panel-body">
 
-                    {% if documentos_tipo %}
+                    {% if documentos_tipo and documentos_tipo|length > 0 %}
 
                     <canvas
                         id="typeChart"
@@ -1279,10 +1280,20 @@ Dashboard | InnovaFile
 
                 <div class="analytics-panel-body">
 
+                    {% if documentos_categoria and documentos_categoria|length > 0 %}
+
                     <canvas
                         id="categoryChart"
                         height="120"
                     ></canvas>
+
+                    {% else %}
+
+                    <div class="empty-state py-4">
+                        No hay categorías con documentos.
+                    </div>
+
+                    {% endif %}
 
                 </div>
 
@@ -1344,7 +1355,7 @@ Dashboard | InnovaFile
                         <div class="top-info">
 
                             <div class="top-name">
-                                {{ user.name }}
+                                {{ user.name if user.name else 'Usuario' }}
                             </div>
 
                             <div class="top-description">
@@ -1355,7 +1366,7 @@ Dashboard | InnovaFile
 
 
                         <div class="top-total">
-                            {{ user.total }}
+                            {{ user.total|default(0) }}
                         </div>
 
                     </div>
@@ -1454,20 +1465,21 @@ Dashboard | InnovaFile
                         <div class="recent-info">
 
                             <div class="recent-title">
-                                {{ document.title }}
+                                {{ document.title if document.title else 'Sin título' }}
                             </div>
 
 
                             <div class="recent-meta">
 
+                                <!-- FIX: proteger relaciones opcionales -->
                                 <span>
-                                    {{ document.category.name }}
+                                    {{ document.category.name if document.category and document.category.name else 'Sin categoría' }}
                                 </span>
 
                                 <span>•</span>
 
                                 <span>
-                                    {{ document.user.name }}
+                                    {{ document.user.name if document.user and document.user.name else 'Usuario eliminado' }}
                                 </span>
 
                             </div>
@@ -1476,7 +1488,7 @@ Dashboard | InnovaFile
 
 
                         <span class="recent-type">
-                            {{ document.file_type|upper }}
+                            {{ document.file_type|upper if document.file_type else 'FILE' }}
                         </span>
 
 
@@ -1560,12 +1572,12 @@ Dashboard | InnovaFile
                         <div>
 
                             <div class="activity-title">
-                                {{ activity.action }}
+                                {{ activity.action if activity.action else 'Acción' }}
                             </div>
 
 
                             <div class="activity-description">
-                                {{ activity.description }}
+                                {{ activity.description if activity.description else '' }}
                             </div>
 
 
@@ -1573,13 +1585,14 @@ Dashboard | InnovaFile
 
                                 <i class="bi bi-person me-1"></i>
 
-                                {{ activity.user.name }}
+                                <!-- FIX: proteger usuario eliminado -->
+                                {{ activity.user.name if activity.user and activity.user.name else 'Sistema' }}
 
                                 {% if activity.created_at %}
 
                                     ·
 
-{{ activity.created_at | fecha_hora_mx }}
+                                    {{ activity.created_at | fecha_hora_mx }}
                                 {% endif %}
 
                             </div>
@@ -1652,7 +1665,7 @@ Dashboard | InnovaFile
                         </div>
 
                         <div class="mini-stat-number">
-                            {{ categorias }}
+                            {{ categorias|default(0) }}
                         </div>
 
                     </div>
@@ -1669,7 +1682,7 @@ Dashboard | InnovaFile
                         </div>
 
                         <div class="mini-stat-number">
-                            {{ actividades }}
+                            {{ actividades|default(0) }}
                         </div>
 
                     </div>
@@ -1686,7 +1699,7 @@ Dashboard | InnovaFile
                         </div>
 
                         <div class="mini-stat-number">
-                            {{ documentos_papelera }}
+                            {{ documentos_papelera|default(0) }}
                         </div>
 
                     </div>
@@ -1703,7 +1716,7 @@ Dashboard | InnovaFile
                         </div>
 
                         <div class="mini-stat-number">
-                            {{ almacenamiento.formatted }}
+                            {{ almacenamiento.formatted if almacenamiento and almacenamiento.formatted else '0 B' }}
                         </div>
 
                     </div>
@@ -1795,14 +1808,58 @@ Dashboard | InnovaFile
 
 
     /* ========================================================
-       CONFIGURACIÓN CHART.JS
+       FIX: helper seguro para parsear datos Jinja -> JSON
+       Evita que tojson rompa si el backend envía tipos raros.
     ======================================================== */
 
-    Chart.defaults.font.family =
-        "'Inter', 'Segoe UI', sans-serif";
+    function safeParse(value, fallback) {
 
-    Chart.defaults.color =
-        INNOVAFILE_COLORS.muted;
+        try {
+
+            if (value === undefined || value === null || value === "") {
+
+                return fallback;
+
+            }
+
+            if (typeof value === "string") {
+
+                return JSON.parse(value);
+
+            }
+
+            return value;
+
+        } catch (e) {
+
+            console.warn("safeParse error:", e);
+
+            return fallback;
+
+        }
+
+    }
+
+
+    /* ========================================================
+       FIX: solo configurar Chart si la librería cargó
+    ======================================================== */
+
+    if (typeof Chart === "undefined") {
+
+        console.error(
+            "Chart.js no se cargó. Verifica el CDN o la conexión."
+        );
+
+    } else {
+
+        Chart.defaults.font.family =
+            "'Inter', 'Segoe UI', sans-serif";
+
+        Chart.defaults.color =
+            INNOVAFILE_COLORS.muted;
+
+    }
 
 
     /* ========================================================
@@ -1815,7 +1872,19 @@ Dashboard | InnovaFile
         );
 
 
-    if (monthlyCanvas) {
+    if (monthlyCanvas && typeof Chart !== "undefined") {
+
+        /* FIX: parsear con safeParse desde strings JSON */
+        const monthlyLabels = safeParse(
+            '{{ documentos_meses | map(attribute="label") | list | tojson }}',
+            []
+        );
+
+        const monthlyData = safeParse(
+            '{{ documentos_meses | map(attribute="total") | list | tojson }}',
+            []
+        );
+
 
         const monthlyContext =
             monthlyCanvas.getContext(
@@ -1855,12 +1924,7 @@ Dashboard | InnovaFile
                 data: {
 
                     labels:
-                        {{
-                            documentos_meses
-                            |map(attribute='label')
-                            |list
-                            |tojson
-                        }},
+                        monthlyLabels,
 
 
                     datasets: [
@@ -1871,12 +1935,7 @@ Dashboard | InnovaFile
 
 
                             data:
-                                {{
-                                    documentos_meses
-                                    |map(attribute='total')
-                                    |list
-                                    |tojson
-                                }},
+                                monthlyData,
 
 
                             borderColor:
@@ -2073,7 +2132,18 @@ Dashboard | InnovaFile
         );
 
 
-    if (typeCanvas) {
+    if (typeCanvas && typeof Chart !== "undefined") {
+
+        const typeLabels = safeParse(
+            '{{ documentos_tipo | map(attribute="name") | list | tojson }}',
+            []
+        );
+
+        const typeData = safeParse(
+            '{{ documentos_tipo | map(attribute="total") | list | tojson }}',
+            []
+        );
+
 
         new Chart(
             typeCanvas,
@@ -2086,24 +2156,14 @@ Dashboard | InnovaFile
                 data: {
 
                     labels:
-                        {{
-                            documentos_tipo
-                            |map(attribute='name')
-                            |list
-                            |tojson
-                        }},
+                        typeLabels,
 
 
                     datasets: [
                         {
 
                             data:
-                                {{
-                                    documentos_tipo
-                                    |map(attribute='total')
-                                    |list
-                                    |tojson
-                                }},
+                                typeData,
 
 
                             backgroundColor: [
@@ -2230,7 +2290,18 @@ Dashboard | InnovaFile
         );
 
 
-    if (categoryCanvas) {
+    if (categoryCanvas && typeof Chart !== "undefined") {
+
+        const categoryLabels = safeParse(
+            '{{ documentos_categoria | map(attribute="name") | list | tojson }}',
+            []
+        );
+
+        const categoryData = safeParse(
+            '{{ documentos_categoria | map(attribute="total") | list | tojson }}',
+            []
+        );
+
 
         new Chart(
             categoryCanvas,
@@ -2243,12 +2314,7 @@ Dashboard | InnovaFile
                 data: {
 
                     labels:
-                        {{
-                            documentos_categoria
-                            |map(attribute='name')
-                            |list
-                            |tojson
-                        }},
+                        categoryLabels,
 
 
                     datasets: [
@@ -2259,12 +2325,7 @@ Dashboard | InnovaFile
 
 
                             data:
-                                {{
-                                    documentos_categoria
-                                    |map(attribute='total')
-                                    |list
-                                    |tojson
-                                }},
+                                categoryData,
 
 
                             backgroundColor:
